@@ -1,43 +1,33 @@
-import { sql, type BuildColumns } from "drizzle-orm";
-import {
-  sqliteTable,
-  text,
-  type SQLiteColumnBuilderBase,
-  type SQLiteTableExtraConfig,
-} from "drizzle-orm/sqlite-core";
+import { sql, type BuildColumns } from 'drizzle-orm';
+import { sqliteTable, text, type SQLiteColumnBuilderBase, type SQLiteTableExtraConfig } from 'drizzle-orm/sqlite-core';
 
 const commonColumns = {
-  id: text("id")
+  id: text('id')
     .primaryKey()
     .default(sql`(uuid4())`),
-  createdAt: text("created_at")
+  createdAt: text('created_at')
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
-  updatedAt: text("updated_at")
+  updatedAt: text('updated_at')
     .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
+    .notNull()
 };
 
-export const publicId = text("public_id")
+export const publicId = text('public_id')
   .default(sql`(lower(hex(randomblob(4))))`)
   .unique()
   .notNull();
 
-export const abstractTable = <
-  TTableName extends string,
-  ColumnsMap extends Record<string, SQLiteColumnBuilderBase>
->(
+export const abstractTable = <TTableName extends string, ColumnsMap extends Record<string, SQLiteColumnBuilderBase>>(
   name: TTableName,
   columns: ColumnsMap,
-  extraConfig?: (
-    self: BuildColumns<TTableName, ColumnsMap & typeof commonColumns, "sqlite">
-  ) => SQLiteTableExtraConfig
+  extraConfig?: (self: BuildColumns<TTableName, ColumnsMap & typeof commonColumns, 'sqlite'>) => SQLiteTableExtraConfig
 ) => {
   return sqliteTable(
     name,
     {
       ...commonColumns,
-      ...columns,
+      ...columns
     },
     extraConfig
   );

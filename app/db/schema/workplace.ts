@@ -1,35 +1,35 @@
-import { primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
-import { abstractTable } from "../abstract-table";
-import { userTable } from "./user";
+import { abstractTable } from '../abstract-table';
+import { userTable } from './user';
 
-export const workplaceTable = abstractTable("workplace", {
-  name: text("name"),
-  ownerId: text("user_id")
+export const workplaceTable = abstractTable('workplace', {
+  name: text('name'),
+  ownerId: text('user_id')
     .references(() => userTable.id)
-    .notNull(),
+    .notNull()
 });
 
 export const workplaceMemberTable = sqliteTable(
-  "workplace_member",
+  'workplace_member',
   {
-    userId: text("user_id")
+    userId: text('user_id')
       .references(() => userTable.id)
       .notNull(),
-    workplaceId: text("workplace_id")
+    workplaceId: text('workplace_id')
       .references(() => workplaceTable.id)
-      .notNull(),
+      .notNull()
   },
   (table) => {
     return {
       workplaceMemberPkey: primaryKey({
         columns: [table.workplaceId, table.userId],
-        name: "workplace_member_pkey",
-      }),
+        name: 'workplace_member_pkey'
+      })
     };
   }
 );
-export const workplaceInvitationTable = abstractTable("invitation", {
-  email: text("email"),
-  workplaceId: text("workplace_id").references(() => workplaceTable.id),
+export const workplaceInvitationTable = abstractTable('invitation', {
+  email: text('email'),
+  workplaceId: text('workplace_id').references(() => workplaceTable.id)
 });

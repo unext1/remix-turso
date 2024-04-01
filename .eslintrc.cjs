@@ -8,6 +8,7 @@
 module.exports = {
   root: true,
   parserOptions: {
+    project: ["./tsconfig.json"],
     ecmaVersion: "latest",
     sourceType: "module",
     ecmaFeatures: {
@@ -19,7 +20,6 @@ module.exports = {
     commonjs: true,
     es6: true,
   },
-  ignorePatterns: ["!**/.server", "!**/.client"],
 
   // Base config
   extends: ["eslint:recommended"],
@@ -71,11 +71,48 @@ module.exports = {
         "plugin:import/recommended",
         "plugin:import/typescript",
       ],
+      rules: {
+        "react/prop-types": "off",
+        "@typescript-eslint/consistent-type-imports": [
+          "warn",
+          {
+            prefer: "type-imports",
+            disallowTypeAnnotations: true,
+            fixStyle: "inline-type-imports",
+          },
+        ],
+        "prefer-const": [
+          "error",
+          {
+            destructuring: "any",
+            ignoreReadBeforeAssign: false,
+          },
+        ],
+        "no-unused-vars": "off",
+        "@typescript-eslint/method-signature-style": ["error", "property"],
+        "@typescript-eslint/no-unused-vars": [
+          "warn",
+          {
+            // ignoreRestSiblings: true,
+            argsIgnorePattern: "^_",
+            varsIgnorePattern: "^_",
+            caughtErrorsIgnorePattern: "^_",
+          },
+        ],
+        quotes: ["error", "single", { avoidEscape: true }],
+        "require-await": "warn",
+        "@typescript-eslint/no-floating-promises": [
+          "error",
+          { ignoreVoid: true },
+        ],
+        "@typescript-eslint/no-misused-promises": "error",
+        "@typescript-eslint/await-thenable": "error",
+      },
     },
 
     // Node
     {
-      files: [".eslintrc.cjs"],
+      files: [".eslintrc.js"],
       env: {
         node: true,
       },
