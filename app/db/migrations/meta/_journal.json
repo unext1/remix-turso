@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1711994745112,
+      "tag": "0000_slippery_mathemanic",
+      "breakpoints": true
+    }
+  ]
+}
