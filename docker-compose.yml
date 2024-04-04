@@ -15,7 +15,7 @@ services:
       context: .
     container_name: field_service_app
     restart: unless-stopped
-    network_mode: 'container_name:field_service_db'
+    network_mode: 'container:field_service_db'
     depends_on:
       - db
     environment:
