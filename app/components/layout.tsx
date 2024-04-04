@@ -1,6 +1,5 @@
-import { DashboardIcon } from '@radix-ui/react-icons';
 import { Form, Link, NavLink, useNavigate } from '@remix-run/react';
-import { Menu, Package2, Search, type LucideProps, ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, Menu, Package2, type LucideProps } from 'lucide-react';
 import { type ForwardRefExoticComponent } from 'react';
 import { $path } from 'remix-routes';
 
@@ -15,9 +14,8 @@ import {
   DropdownMenuTrigger
 } from '~/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/sheet';
-import { type UserType } from '~/services/auth.server';
+import { type SessionUser } from '~/services/auth.server';
 import { cn } from '~/utils';
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbSeparator, BreadcrumbPage } from './ui/breadcrumb';
 
 type navLinksType = {
   icon: ForwardRefExoticComponent<LucideProps>;
@@ -34,7 +32,7 @@ export const AppLayout = ({
   appLinks
 }: {
   children: React.ReactNode;
-  user: UserType;
+  user: SessionUser;
   navLinks?: navLinksType;
   appLinks?: navLinksType;
 }) => {
