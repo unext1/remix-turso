@@ -31,9 +31,9 @@ export const columns: ColumnDef<Task>[] = [
     enableHiding: false
   },
   {
-    accessorKey: 'id',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Id" />,
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue('id')}</div>,
+    accessorKey: 'name',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="name" />,
+    cell: ({ row }) => <div className="w-[80px]">{row.getValue('name')}</div>,
     enableSorting: false,
     enableHiding: false
   },
