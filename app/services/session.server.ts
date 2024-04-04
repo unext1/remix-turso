@@ -16,11 +16,11 @@ export const sessionCookie = createTypedCookie({
   schema: z.string()
 });
 
-export const notifications = createCookieSessionStorage({
-  cookie: {
-    name: '_flash'
-  }
-});
+export const notifications = () => {
+  return createCookieSessionStorage({
+    cookie: cookie('_flash')
+  });
+};
 
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
