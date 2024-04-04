@@ -27,9 +27,4 @@ services:
       - ./turso-data:/var/lib/sqld
       - ./docker/turso/ext:/ext
     command: /bin/sqld --enable-namespaces --extensions-path=/ext
-    networks:
-      - proxy
-      
-networks:
-  proxy:
-    external: true
+    
