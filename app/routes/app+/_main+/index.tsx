@@ -97,7 +97,7 @@ const AppPage = () => {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid sm:grid-cols-2 grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {workplaces.map((workplace) => (
           <CustomCard
             name={workplace.name || ''}
