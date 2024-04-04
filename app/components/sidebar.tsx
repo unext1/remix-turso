@@ -1,6 +1,7 @@
 import { Form, Link, NavLink } from '@remix-run/react';
-import { BookIcon, LayoutDashboard, MailIcon, UserIcon, UsersIcon } from 'lucide-react';
+import { BookIcon, LayoutDashboard, UserIcon, UsersIcon } from 'lucide-react';
 import { type ReactNode } from 'react';
+
 import { type UserType } from '~/services/auth.server';
 import { cn } from '~/utils';
 import { Button } from './ui/button';
