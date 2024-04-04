@@ -16,6 +16,7 @@ import { type LoaderFunctionArgs } from '@remix-run/node';
 import { csrf } from './services/session.server';
 import { getTheme } from './services/theme.server';
 import styles from './tailwind.css?url';
+import { Toaster } from './components/ui/toaster';
 
 export const links = () => {
   return [{ rel: 'stylesheet', href: styles }];
@@ -51,7 +52,10 @@ export const Layout = ({ children }: { children: ReactNode }) => {
         <Links />
       </head>
       <body className="min-h-screen-safe h-screen-safe flex flex-col">
-        <AuthenticityTokenProvider token={csrfToken}>{children}</AuthenticityTokenProvider>
+        <AuthenticityTokenProvider token={csrfToken}>
+          <Toaster />
+          {children}
+        </AuthenticityTokenProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
