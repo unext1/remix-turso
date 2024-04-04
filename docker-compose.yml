@@ -1,0 +1,33 @@
+version: '3.6'
+services:
+  website:
+    build: 
+      context: .
+    container_name: field_service_app
+    restart: unless-stopped
+    network_mode: 'service:db'
+    depends_on:
+      - db
+    environment:
+      SITE_URL: ${SITE_URL}
+      SESSION_SECRET: ${SESSION_SECRET}
+      CSRF_SECRET: ${CSRF_SECRET}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      LIBSQL_ADMIN_URL: ${LIBSQL_ADMIN_URL}
+      LIBSQL_URL: ${LIBSQL_URL}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+    networks:
+      - proxy
+  db:
+    image: wbms/sqld:20240326-1324
+    environment:
+      SQLD_ADMIN_LISTEN_ADDR: 0.0.0.0:8081
+    volumes:
+      - ./turso-data:/var/lib/sqld
+      - ./docker/turso/ext:/ext
+    command: /bin/sqld --enable-namespaces --extensions-path=/ext
+      
+networks:
+  proxy:
+    external: true
