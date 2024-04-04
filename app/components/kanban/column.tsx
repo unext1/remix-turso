@@ -2,6 +2,7 @@ import { useSubmit } from '@remix-run/react';
 import { PlusIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
+
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { EditableText } from './editible-text';
@@ -10,18 +11,18 @@ import RemoveColumn from './remove-column';
 import Task from './task';
 
 export interface TaskType {
-  id: number;
+  id: string;
   name: string;
   order: number;
   content: string | null;
-  columnId: number;
-  projectId: number;
-  ownerId: number | null;
+  columnId: string;
+  projectId: string;
+  ownerId: string | null;
 }
 
 interface ColumnProps {
   name: string;
-  columnId: number;
+  columnId: string;
   tasks: TaskType[];
   order: number;
 }

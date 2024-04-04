@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-autofocus */
 import { useState, useRef } from 'react';
 import { flushSync } from 'react-dom';
 import { Form, useSubmit } from '@remix-run/react';
@@ -12,7 +13,7 @@ export function NewColumn({
   onAdd,
   editInitially
 }: {
-  projectId: number;
+  projectId: string;
   onAdd: () => void;
   editInitially: boolean;
 }) {

@@ -3,7 +3,7 @@ import { Package2 } from 'lucide-react';
 import { $path } from 'remix-routes';
 import { Button } from './ui/button';
 
-export const Navbar = ({ userId }: { userId?: number }) => {
+export const Navbar = ({ userId }: { userId?: string }) => {
   return (
     <header className="flex items-center h-14 border-b backdrop-blur-[8px] supports-[backdrop-filter]:bg-background/80 fixed z-50 w-full px-4 lg:h-[60px] lg:px-6">
       {/* TOP MENU */}
@@ -19,7 +19,7 @@ export const Navbar = ({ userId }: { userId?: number }) => {
         </div>
         <div className="flex justify-end">
           <Link to={$path('/login')}>
-            <Button variant="default">{userId !== null ? 'Go To App' : 'Login'}</Button>
+            <Button variant="default">{userId !== '' ? 'Go To App' : 'Login'}</Button>
           </Link>
         </div>
       </div>

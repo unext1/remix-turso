@@ -24,7 +24,7 @@ const Task = ({
 
   const handleDragStart = (
     e: DragEvent,
-    { id, name, columnId, ownerId }: { id: number; name: string; columnId: number; ownerId: number | null }
+    { id, name, columnId, ownerId }: { id: string; name: string; columnId: string; ownerId: string | null }
   ) => {
     if (!e || !e.dataTransfer) return;
     e.dataTransfer.effectAllowed = 'move';

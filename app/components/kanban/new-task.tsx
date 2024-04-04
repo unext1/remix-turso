@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-autofocus */
 import { useRef } from 'react';
 import { Form, useSubmit } from '@remix-run/react';
 
@@ -10,7 +11,7 @@ export function NewTask({
   onComplete,
   onAddCard
 }: {
-  columnId: number;
+  columnId: string;
   nextOrder: number;
   onComplete: () => void;
   onAddCard: () => void;

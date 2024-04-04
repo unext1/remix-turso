@@ -1,7 +1,7 @@
 import { Form, useSubmit } from '@remix-run/react';
 import { Button } from '../ui/button';
 
-const RemoveColumn = ({ columnId }: { columnId: number }) => {
+const RemoveColumn = ({ columnId }: { columnId: string }) => {
   const submit = useSubmit();
   return (
     <Form
