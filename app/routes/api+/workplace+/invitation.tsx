@@ -4,8 +4,9 @@ import { $path } from 'remix-routes';
 import { z } from 'zod';
 import { zx } from 'zodix';
 
-import { db } from '~/db';
+import { db, workplaceDb } from '~/db';
 import { workplaceInvitationTable, workplaceMemberTable } from '~/db/schema';
+import { workplaceUser } from '~/db/schema-workplace';
 import { requireUser } from '~/services/auth.server';
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -32,6 +33,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (!newMember) {
     throw Error('Something went wrong');
   }
+
+  await workplaceDb(workplaceId).insert(workplaceUser).values({
+    id: user.id
+  });
 
   await db.delete(workplaceInvitationTable).where(eq(workplaceInvitationTable.id, invitationId));
 
