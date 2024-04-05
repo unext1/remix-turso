@@ -10,7 +10,7 @@
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "remix-serve ./build/server/index.js",
     "typecheck": "tsc",
-    "migrate": "pnpm migrate:gen && pnpm migrate:gen:wp",
+    "migrate": "pnpm migrate:gen && pnpm migrate:gen:wp && pnpm migrate:push && pnpm migrate:push:wp",
     "migrate:gen": "drizzle-kit generate:sqlite --schema=./app/db/schema/index.ts --out=./app/db/migrations",
     "migrate:gen:wp": "drizzle-kit generate:sqlite --schema=./app/db/schema-workplace/index.ts --out=./app/db/migrations-workplace",
     "migrate:reset": "rm -rf ./app/db/migrations && rm -rf ./app/db/migrations-org && pnpm migrate",

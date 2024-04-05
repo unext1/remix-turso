@@ -13,6 +13,6 @@ ssh oracle <<EOF
   git pull
   docker-compose build
   docker-compose up -d
-  docker exec -i -t field_service_app pnpm migrate:push
+  docker exec -i -t field_service_app pnpm migrate
   echo "Done"
 EOF
