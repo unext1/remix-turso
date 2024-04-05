@@ -33,7 +33,7 @@ const InvitationPage = () => {
             <TableRow>
               <TableHead className="w-[100px]">Status</TableHead>
               <TableHead className="w-[100px]">Workplace</TableHead>
-              <TableHead>Invited Email</TableHead>
+              <TableHead> Email</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
