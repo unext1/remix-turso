@@ -150,7 +150,7 @@ export const AppLayout = ({
 const NavLinksComponent = ({ appLinks, navLinks }: { appLinks?: navLinksType; navLinks?: navLinksType }) => {
   return (
     <>
-      {appLinks && <span className="mb-2">App</span>}
+      {appLinks && <span className="mb-2 mt-4">App</span>}
       {appLinks
         ? appLinks.map((link) => (
             <NavLink
