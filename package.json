@@ -14,7 +14,8 @@
     "migrate:gen": "drizzle-kit generate:sqlite --schema=./app/db/schema/index.ts --out=./app/db/migrations",
     "migrate:gen:wp": "drizzle-kit generate:sqlite --schema=./app/db/schema-workplace/index.ts --out=./app/db/migrations-workplace",
     "migrate:reset": "rm -rf ./app/db/migrations && rm -rf ./app/db/migrations-org && pnpm migrate",
-    "migrate:push": "pnpm tsx ./app/db/migrate.ts"
+    "migrate:push": "pnpm tsx ./app/db/migrate.ts",
+    "migrate:push:wp": "pnpm tsx ./app/db/migrate-workplace.ts"
   },
   "dependencies": {
     "@conform-to/react": "^1.0.6",
