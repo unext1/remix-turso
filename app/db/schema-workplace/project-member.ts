@@ -7,7 +7,7 @@ export const projectMemberTable = sqliteTable(
   'project_member',
   {
     userId: text('user_id')
-      .references(() => workplaceUser.id)
+      .references(() => workplaceUser.id, { onDelete: 'cascade' })
       .notNull(),
     projectId: text('project_id')
       .references(() => projectTable.id)

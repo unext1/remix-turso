@@ -12,7 +12,7 @@ export const projectTaskTable = sqliteTable('project_task', {
   name: text('name').notNull(),
   content: text('content'),
   order: integer('order').notNull(),
-  ownerId: text('owner_id').references(() => workplaceUser.id),
+  ownerId: text('owner_id').references(() => workplaceUser.id, { onDelete: 'set null' }),
   projectId: text('project_id')
     .references(() => projectTable.id, { onDelete: 'cascade' })
     .notNull(),
