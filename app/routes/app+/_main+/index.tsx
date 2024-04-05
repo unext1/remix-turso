@@ -54,7 +54,6 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 const AppPage = () => {
   const { user, workplaces } = useLoaderData<typeof loader>();
-
   const lastResult = useActionData<typeof action>();
 
   const [form, { name, ownerId }] = useForm({
@@ -105,7 +104,7 @@ const AppPage = () => {
             key={workplace.id}
             userId={user.id}
             workplaceId={workplace.id}
-            userEmail={user.email}
+            userEmail={workplace.owner.email}
           />
         ))}
       </div>
