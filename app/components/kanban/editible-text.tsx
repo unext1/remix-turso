@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import { useFetcher } from '@remix-run/react';
 import { forwardRef, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
@@ -67,7 +68,6 @@ export function EditableText({
           }
         }}
         onBlur={(event) => {
-          console.log('blur');
           if (inputRef.current?.value !== value && inputRef.current?.value.trim() !== '') {
             fetcher.submit(event.currentTarget);
           }
