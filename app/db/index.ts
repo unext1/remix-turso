@@ -42,7 +42,6 @@ export const deleteDatabase = async (dbName: string) => {
 export const createWorkplaceDb = async (workplaceId: string) => {
   try {
     const created = await createDatabase(workplaceId);
-    console.log(created);
     if (created) {
       return await migrateWorkplaceDb(workplaceId);
     }
