@@ -41,7 +41,7 @@ export const CustomCard = ({ name, workplaceId, projectId, ownerId, userId, user
                 workplaceId: workplaceId
               })}
             >
-              <Button className="w-full" variant="secondary">
+              <Button className="w-full" variant="default">
                 Enter project
               </Button>
             </Link>
@@ -53,7 +53,9 @@ export const CustomCard = ({ name, workplaceId, projectId, ownerId, userId, user
                   workplaceId: workplaceId
                 })}
               >
-                <Button className="w-full">Project settings</Button>
+                <Button className="w-full" variant="secondary">
+                  Project settings
+                </Button>
               </Link>
             ) : null}
           </div>
@@ -64,7 +66,7 @@ export const CustomCard = ({ name, workplaceId, projectId, ownerId, userId, user
                 workplaceId: workplaceId
               })}
             >
-              <Button className="w-full" variant="secondary">
+              <Button className="w-full" variant="default">
                 Enter Workplace
               </Button>
             </Link>
