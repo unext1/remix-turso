@@ -1,6 +1,6 @@
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
-import { type ActionFunctionArgs, type LoaderFunctionArgs, json, redirect } from '@remix-run/node';
+import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
 
 import { useActionData, useFetcher, useLoaderData, useNavigation } from '@remix-run/react';
 import { $params, $path } from 'remix-routes';
@@ -23,9 +23,11 @@ import { Label } from '~/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '~/components/ui/tooltip';
 import { H4 } from '~/components/ui/typography';
 import { workplaceDb } from '~/db';
-import { projectColumnTable, projectMemberTable, projectTable } from '~/db/schema-workplace/project';
+import { projectColumnTable, projectMemberTable, projectTable } from '~/db/schema-workplace';
+
+import { useAppDashboardData } from '~/hooks/routes-hooks';
 import { requireUser } from '~/services/auth.server';
-import { getAllProjects } from '~/services/project.server';
+import { getAllMyProjects } from '~/services/project.server';
 
 const schema = z.object({
   name: z.string().min(1, 'Project name is required'),
@@ -91,7 +93,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const user = await requireUser({ request, params });
   const { workplaceId } = $params('/app/workplace/:workplaceId', params);
 
-  const projects = await getAllProjects({ user, workplaceId });
+  const projects = await getAllMyProjects({ user, workplaceId });
 
   return json({
     user,
@@ -101,7 +103,15 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 const ProjectPage = () => {
+  const { user, projects, workplaceId } = useLoaderData<typeof loader>();
   const lastResult = useActionData<typeof action>();
+  const workplaceData = useAppDashboardData();
+
+  const projectOwner = workplaceData?.workplaceMembers?.find((i) => i.workplace.ownerId)?.user;
+
+  const fetcher = useFetcher();
+  const navigation = useNavigation();
+  const isCreating = navigation.state;
 
   const [form, { name, ownerId }] = useForm({
     lastResult,
@@ -110,10 +120,6 @@ const ProjectPage = () => {
     shouldRevalidate: 'onBlur'
   });
 
-  const { user, projects, workplaceId } = useLoaderData<typeof loader>();
-  const fetcher = useFetcher();
-  const navigation = useNavigation();
-  const isCreating = navigation.state;
   return (
     <div>
       <div className="flex justify-between">
@@ -166,14 +172,15 @@ const ProjectPage = () => {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid sm:grid-cols-2 grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {' '}
         {projects.length >= 1
           ? projects.map((project) => (
               <CustomCard
                 key={project.id}
                 ownerId={project.ownerId || ''}
                 userId={user.id}
-                userEmail={user.email}
+                userEmail={projectOwner?.email || ''}
                 workplaceId={workplaceId}
                 name={project.name}
                 projectId={project.id}
