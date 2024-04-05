@@ -1,11 +1,12 @@
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, json, useLoaderData, type MetaFunction } from '@remix-run/react';
-import { MouseIcon } from 'lucide-react';
+import { MailIcon, MouseIcon } from 'lucide-react';
 import { $path } from 'remix-routes';
 import { Navbar } from '~/components/navbar';
 
-import { Button } from '~/components/ui/button';
+import { buttonVariants } from '~/components/ui/button';
 import { authenticator } from '~/services/auth.server';
+import { cn } from '~/utils';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await authenticator.isAuthenticated(request);
@@ -27,25 +28,44 @@ export default function Index() {
   const { userId } = useLoaderData<typeof loader>();
   return (
     <div>
-      <Navbar userId={userId || ''} />
-      <section className="space-y-6 h-screen flex justify-center items-center">
-        <div className="container flex max-w-[54rem] flex-col items-center gap-5 text-center">
+      <Navbar userId={userId || null} />
+      <section className="pb-16 pt-36 lg:py-40 ">
+        <div
+          className="container flex max-w-[54rem] opacity-0 animate-fade-up flex-col items-center gap-5 text-center"
+          style={{ animationFillMode: 'forwards' }}
+        >
+          <Link
+            to="https://twitter.com/lauvadev"
+            className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), '')}
+          >
+            Made by Lauva.dev
+          </Link>
+
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            Field Service App To Controll
-            <span className="pl-2 mr-2 relative bg-gradient-to-r from-red-400 to-red-700 bg-clip-text font-extrabold text-transparent">
-              Your Business
+            Field Service App To Control{' '}
+            <span className="relative bg-gradient-to-r from-red-400 to-red-600 bg-clip-text font-extrabold text-transparent">
+              Your Buisness
             </span>
           </h1>
-          <p className="text-muted-foreground tracking-wide text-lg max-w-[42rem]">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem recusandae iure labore inventore,
-            voluptatibus veritatis
+
+          <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
+            Empower your financial management with AI-driven insights, making tracking and optimizing your finances
+            effortless.
           </p>
-          <div className="flex gap-4">
-            <Button size="lg">Get Started</Button>
-            <Link to={$path('/login')}>
-              <Button variant="outline" size="lg">
-                Login
-              </Button>
+
+          <div className="flex justify-center space-x-2 md:space-x-4">
+            <Link to="/" className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), 'px-4')}>
+              <MailIcon className="w-4 h-4" />
+              <p className="pl-2">
+                <span className="hidden sm:inline-block">Lets explore</span> FS
+              </p>
+            </Link>
+            <Link
+              to={userId ? $path('/app') : $path('/login')}
+              className={cn(buttonVariants({ variant: 'default', size: 'lg' }), 'px-4')}
+            >
+              <MailIcon className="w-4 h-4" />
+              <p className="pl-2 ">{userId ? 'Go to App' : 'Login'}</p>
             </Link>
           </div>
           <a href="#skills" className="flex animate-bounce text-muted-foreground">
