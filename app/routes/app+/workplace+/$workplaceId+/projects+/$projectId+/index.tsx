@@ -181,7 +181,7 @@ const ProjectPage = () => {
 
   return (
     <div>
-      <H4 className="mb-6 capitalize tracking-wide">{project.name}</H4>
+      <H4 className="mb-6 capitalize tracking-wide">Project / {project.name}</H4>
       <div className="h-full flex flex-col overflow-x-scroll" ref={scrollContainerRef}>
         <div className="flex flex-grow h-full items-start gap-4 pb-4">
           {[...columns.values()].map((col, index, cols) => {
