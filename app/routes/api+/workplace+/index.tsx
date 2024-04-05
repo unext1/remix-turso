@@ -1,5 +1,5 @@
 import { redirect, type ActionFunctionArgs } from '@remix-run/node';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { $path } from 'remix-routes';
 import { z } from 'zod';
 import { zx } from 'zodix';
@@ -33,7 +33,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
   if (_action === 'leave') {
     //Remove Workplace member
-    await db.delete(workplaceMemberTable).where(eq(workplaceMemberTable.userId, user.id));
+    await db
+      .delete(workplaceMemberTable)
+      .where(and(eq(workplaceMemberTable.userId, user.id), eq(workplaceMemberTable.workplaceId, workplaceId)));
 
     //Remove myself from the workplace
     await workplaceDb(workplaceId).delete(workplaceUser).where(eq(workplaceUser.id, user.id));
