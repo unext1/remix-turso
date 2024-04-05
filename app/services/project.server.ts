@@ -1,24 +1,14 @@
 import { workplaceDb } from '~/db';
 import { type SessionUser } from './auth.server';
 
-export const getAllProjects = async ({ user, workplaceId }: { user: SessionUser; workplaceId: string }) => {
-  // Todo check if member of project
-
-  //   const memberOfProject = user?.memberOfProject.map((project) => project.projectId);
-
-  //   if (!memberOfProject || memberOfProject.length <= 0) {
-  //     return [];
-  //   }
-
-  const projects = await workplaceDb(workplaceId).query.projectTable.findMany({
+export const getAllMyProjects = async ({ user, workplaceId }: { user: SessionUser; workplaceId: string }) => {
+  const projects = await workplaceDb(workplaceId).query.projectMemberTable.findMany({
+    columns: {},
     with: {
-      user: true,
-      columns: true,
-      tasks: true
-    }
+      project: true
+    },
+    where: (member, { eq }) => eq(member.userId, user.id)
   });
 
-  console.log(projects);
-
-  return projects;
+  return projects.map((p) => p.project);
 };
