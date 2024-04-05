@@ -1,8 +1,9 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
+import { useFetcher, useParams } from '@remix-run/react';
 import { type Row } from '@tanstack/react-table';
+import { $params, $path } from 'remix-routes';
 import { type z } from 'zod';
 
-import { roles, tableSchema } from '~/utils/team-table';
 import { Button } from '~/components/ui/button';
 import {
   DropdownMenu,
@@ -11,13 +12,12 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from '~/components/ui/dropdown-menu';
-import { Form } from '@remix-run/react';
+import { roles, tableSchema } from '~/utils/team-table';
 
 export type Task = z.infer<typeof tableSchema>;
 
@@ -27,6 +27,11 @@ interface DataTableRowActionsProps<TData> {
 
 export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {
   const task = tableSchema.parse(row.original);
+
+  const fetcher = useFetcher();
+
+  const params = useParams();
+  const { workplaceId } = $params('/app/workplace/:workplaceId/team/manage', params);
 
   return (
     <DropdownMenu>
@@ -52,7 +57,15 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
           </DropdownMenuSubContent>
         </DropdownMenuSub>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Delete</DropdownMenuItem>
+        <fetcher.Form
+          method="post"
+          action={$path('/app/workplace/:workplaceId/team/manage', { workplaceId: workplaceId })}
+        >
+          <input type="hidden" name="userId" value={task.id} />
+          <button type="submit" name="_action" value="delete">
+            <DropdownMenuItem>Delete</DropdownMenuItem>
+          </button>
+        </fetcher.Form>
       </DropdownMenuContent>
     </DropdownMenu>
   );
