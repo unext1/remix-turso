@@ -107,8 +107,8 @@ export const AppLayout = ({
 
           {/* TOP MENU */}
           <div className="w-full flex-1">
-            <Button onClick={goBack} variant="default" size="sm">
-              <ArrowLeftIcon className="w-3 h-4" />
+            <Button variant="default" size="icon" className="shrink-0" onClick={goBack}>
+              <ArrowLeftIcon className="h-5 w-5" />
             </Button>
           </div>
           <DropdownMenu>
@@ -161,7 +161,7 @@ const NavLinksComponent = ({ appLinks, navLinks }: { appLinks?: navLinksType; na
                 cn({
                   'flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-all hover:text-primary':
                     true,
-                  ' text-white-content bg-secondary': isActive
+                  'text-white-content bg-secondary': isActive
                 })
               }
             >
@@ -182,7 +182,7 @@ const NavLinksComponent = ({ appLinks, navLinks }: { appLinks?: navLinksType; na
                 cn({
                   'flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground transition-all hover:text-primary':
                     true,
-                  ' text-white-content bg-secondary': isActive
+                  'text-white-content bg-secondary': isActive
                 })
               }
             >
