@@ -8,8 +8,8 @@ import Column from '~/components/kanban/column';
 import { NewColumn } from '~/components/kanban/new-column';
 import { H4 } from '~/components/ui/typography';
 import { workplaceDb } from '~/db';
+import { projectColumnTable, projectTable, projectTaskTable } from '~/db/schema-workplace';
 
-import { projectColumnTable, projectTable, projectTaskTable } from '~/db/schema-workplace/project';
 import { requireUser } from '~/services/auth.server';
 
 export interface RenderedItem {
@@ -63,8 +63,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
     case 'createTask': {
       const name = String(formData.get('name') || '');
-      const columnId = String(formData.get('columnId') || 0);
+      const columnId = String(formData.get('columnId') || '');
       const order = Number(formData.get('order') || 0);
+
+      console.log(name, columnId, order, projectId, user.id);
 
       return workplaceDb(workplaceId).insert(projectTaskTable).values({
         columnId,
