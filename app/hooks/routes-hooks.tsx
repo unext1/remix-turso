@@ -10,5 +10,10 @@ export const useRootData = () => {
 };
 
 export const useAppDashboardData = () => {
-  return useRouteLoaderData<typeof appDasboardLayoutLoader>($routeId('routes/app+/workplace+/$workplaceId+/_layout'));
+  const data = useRouteLoaderData<typeof appDasboardLayoutLoader>(
+    $routeId('routes/app+/workplace+/$workplaceId+/_layout')
+  );
+  if (data) {
+    return data.workplaceData;
+  }
 };
