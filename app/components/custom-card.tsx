@@ -15,32 +15,12 @@ type CardTypes = {
   userEmail: string;
 };
 export const CustomCard = ({ name, workplaceId, projectId, ownerId, userId, userEmail }: CardTypes) => {
-  const fetcher = useFetcher();
   return (
     <Card>
       <CardHeader>
         <div className="w-full justify-between flex">
           <CardTitle className="capitalize my-auto">{name}</CardTitle>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="sm">
-                X
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Remove {projectId ? 'Project' : 'Workplace'}</DialogTitle>
-                <DialogDescription>Are you really really sure you want to delete {name} ?</DialogDescription>
-              </DialogHeader>
-              <fetcher.Form method="post" action={$path(projectId ? '/api/project' : '/api/workplace')}>
-                {projectId ? <Input type="hidden" name="projectId" value={projectId} /> : null}
-                <Input type="hidden" name="workplaceId" value={workplaceId} />
-                <Button type="submit" variant="destructive" name="_action" value="delete">
-                  Remove {projectId ? 'Project' : 'Workplace'}
-                </Button>
-              </fetcher.Form>
-            </DialogContent>
-          </Dialog>
+          <CardFormDialog isOwner={ownerId === userId} name={name} projectId={projectId} workplaceId={workplaceId} />
         </div>
 
         <CardDescription>Invite your team members to collaborate.</CardDescription>
@@ -92,5 +72,67 @@ export const CustomCard = ({ name, workplaceId, projectId, ownerId, userId, user
         )}
       </CardContent>
     </Card>
+  );
+};
+
+const CardFormDialog = ({
+  name,
+  projectId,
+  workplaceId,
+  isOwner
+}: {
+  name?: string | null;
+  projectId?: string;
+  workplaceId: string;
+  isOwner: boolean;
+}) => {
+  const fetcher = useFetcher();
+
+  return (
+    <>
+      {isOwner ? (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="ghost" size="sm">
+              X
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Remove {projectId ? 'Project' : 'Workplace'}</DialogTitle>
+              <DialogDescription>Are you really really sure you want to delete {name} ?</DialogDescription>
+            </DialogHeader>
+            <fetcher.Form method="post" action={$path(projectId ? '/api/project' : '/api/workplace')}>
+              {projectId ? <Input type="hidden" name="projectId" value={projectId} /> : null}
+              <Input type="hidden" name="workplaceId" value={workplaceId} />
+              <Button type="submit" variant="destructive" name="_action" value="delete">
+                Remove {projectId ? 'Project' : 'Workplace'}
+              </Button>
+            </fetcher.Form>
+          </DialogContent>
+        </Dialog>
+      ) : (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="ghost" size="sm">
+              X
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Leave {projectId ? 'Project' : 'Workplace'}</DialogTitle>
+              <DialogDescription>Are you really really sure you want to leave {name} ?</DialogDescription>
+            </DialogHeader>
+            <fetcher.Form method="post" action={$path(projectId ? '/api/project' : '/api/workplace')}>
+              {projectId ? <Input type="hidden" name="projectId" value={projectId} /> : null}
+              <Input type="hidden" name="workplaceId" value={workplaceId} />
+              <Button type="submit" variant="destructive" name="_action" value="leave">
+                Leave {projectId ? 'Project' : 'Workplace'} 😢
+              </Button>
+            </fetcher.Form>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 };
