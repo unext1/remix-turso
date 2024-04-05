@@ -1,7 +1,7 @@
-import { primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { primaryKey, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core';
 import { abstractTable } from '../abstract-table';
 import { userTable } from './user';
-import { relations, sql } from 'drizzle-orm';
+import { relations } from 'drizzle-orm';
 
 export const workplaceTable = abstractTable('workplace', {
   name: text('name'),
@@ -27,16 +27,21 @@ export const workplaceMemberTable = sqliteTable(
   }
 );
 
-export const workplaceInvitationTable = sqliteTable('invitation', {
-  id: text('id')
-    .primaryKey()
-    .default(sql`(uuid4())`),
-  email: text('email'),
-  workplaceId: text('workplace_id').references(() => workplaceTable.id),
-  createdAt: text('created_at')
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull()
-});
+export const workplaceInvitationTable = abstractTable(
+  'invitation',
+  {
+    email: text('email').notNull(),
+    workplaceId: text('workplace_id').references(() => workplaceTable.id, { onDelete: 'cascade', onUpdate: 'restrict' })
+  },
+  (table) => {
+    return {
+      invitationWorkplaceIdEmailKey: unique('invitation_unique_workplace_id_email_key').on(
+        table.workplaceId,
+        table.email
+      )
+    };
+  }
+);
 
 export const workplaceRelations = relations(workplaceTable, ({ one, many }) => ({
   owner: one(userTable, {
