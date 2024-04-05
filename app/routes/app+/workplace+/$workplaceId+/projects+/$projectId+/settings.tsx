@@ -1,6 +1,6 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/node';
-import { Form, useActionData, useLoaderData } from '@remix-run/react';
-import { and, eq, notInArray } from 'drizzle-orm';
+import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
+import { Form, useLoaderData } from '@remix-run/react';
+import { eq } from 'drizzle-orm';
 import { $params, $path } from 'remix-routes';
 import { z } from 'zod';
 
@@ -14,12 +14,8 @@ import { projectMemberTable, projectTable } from '~/db/schema-workplace';
 import { useAppDashboardData } from '~/hooks/routes-hooks';
 import { requireUser } from '~/services/auth.server';
 
-const schema = z.object({
-  userId: z.string().min(1, 'user is required')
-});
-
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const user = await requireUser({ params, request });
+  await requireUser({ params, request });
 
   const { projectId, workplaceId } = $params('/app/workplace/:workplaceId/projects/:projectId', params);
 
@@ -31,9 +27,11 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   //   throw redirect($path('/app/workplace/:workplaceId/projects', { workplaceId: workplaceId }));
   // }
 
-  const project = await workplaceDb(workplaceId).query.projectTable.findMany({
+  const project = await workplaceDb(workplaceId).query.projectTable.findFirst({
     with: {
       tasks: true,
+      owner: true,
+      members: true,
       columns: {
         orderBy: (projectColumnTable, { asc }) => [asc(projectColumnTable.order)]
       }
@@ -41,53 +39,11 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     where: eq(projectTable.id, projectId)
   });
 
-  const projectMembers = await workplaceDb(workplaceId).query.projectMemberTable.findMany({
-    where: and(eq(projectMemberTable.projectId, projectId)),
-    with: {
-      user: true
-    }
-  });
-
-  const usersInProject = projectMembers.map((i) => i.userId);
-
-  // const workplaceMembers = await workplaceDb(workplaceId).query.workplaceMember.findMany({
-  //   where: and(notInArray(projectMemberTable.userId, usersInProject)),
-  //   with: {
-  //     user: {
-  //       with: {
-  //         memberOfProject: true
-  //       }
-  //     },
-  //     workplace: {
-  //       columns: {
-  //         ownerId: true
-  //       }
-  //     }
-  //   }
-  // });
-
-  // const users = workplaceMembers.map((workplaceMember) => ({
-  //   id: workplaceMember.user.id,
-  //   email: workplaceMember.user.email,
-  //   name: workplaceMember.user.name,
-  //   role: workplaceMember.workplace.ownerId === workplaceMember.userId ? 'owner' : 'user'
-  // }));
-
-  // TODO Real users.
-  const users = [
-    {
-      id: 'labas',
-      email: 'lasd',
-      name: 'labas',
-      role: 'user'
-    }
-  ];
-
-  return json({ users, projectMembers, project });
+  return json({ project });
 };
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
-  const user = requireUser({ request, params });
+  await requireUser({ request, params });
 
   const { projectId, workplaceId } = $params('/app/workplace/:workplaceId/projects/:projectId', params);
 
@@ -98,22 +54,27 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     return json({ success: 'false' });
   }
 
-  await workplaceDb(workplaceId)
-    .insert(projectMemberTable)
-    .values({
-      projectId: projectId,
-      userId: userId
-    })
-    .returning();
+  await workplaceDb(workplaceId).insert(projectMemberTable).values({
+    projectId: projectId,
+    userId: userId
+  });
 
   return json({ success: 'true' });
 };
 
 const ProjectSettings = () => {
-  const { users, projectMembers, project } = useLoaderData<typeof loader>();
-  const data = useAppDashboardData();
-  console.log(data?.workplaceData?.workplaceMembers);
-  const actionData = useActionData<typeof action>();
+  const { project } = useLoaderData<typeof loader>();
+  const workplaceData = useAppDashboardData();
+
+  const exsistingUsersIds = project?.members.map((member) => member.userId);
+
+  const users = workplaceData?.workplaceMembers
+    ?.filter((member) => !exsistingUsersIds?.includes(member.userId))
+    .map((member) => ({
+      id: member.user.id,
+      name: member.user.name,
+      email: member.user.email
+    }));
 
   return (
     <div>
@@ -130,34 +91,36 @@ const ProjectSettings = () => {
           </TableHeader>
           <TableBody>
             {project
-              ? project.map((project) =>
-                  project.columns.map((column) => (
-                    <TableRow key={column.id} draggable={true}>
-                      <TableCell>{column?.name}</TableCell>
-                      <TableCell className="flex justify-end">
-                        <Form method="post" action={$path('/api/workplace/invitation')}>
-                          <input type="hidden" name="invitationId" value={column.id || ''} />
-                          <input type="hidden" name="projectId" value={column.projectId || ''} />
-                          <Button variant="destructive" name="_action" value="decline" size="sm">
-                            X
-                          </Button>
-                        </Form>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )
+              ? project.columns.map((column) => (
+                  <TableRow key={column.id} draggable={true}>
+                    <TableCell>{column?.name}</TableCell>
+                    <TableCell className="flex justify-end">
+                      <Form method="post" action={$path('/api/workplace/invitation')}>
+                        <input type="hidden" name="invitationId" value={column.id || ''} />
+                        <input type="hidden" name="projectId" value={column.projectId || ''} />
+                        <Button variant="destructive" name="_action" value="decline" size="sm">
+                          X
+                        </Button>
+                      </Form>
+                    </TableCell>
+                  </TableRow>
+                ))
               : null}
           </TableBody>
         </Table>
       </Card>
 
+      <H4 className="tracking-wide mb-6 mt-12">Invite Member</H4>
+
       <Card className="p-6 mt-4">
         <Form method="post" className="space-y-4">
           <Combobox
-            items={users.map((user) => ({
-              label: user.name || user.email,
-              value: user.id.toString()
-            }))}
+            items={
+              users?.map((user) => ({
+                label: user.name || user.email,
+                value: user.id.toString()
+              })) || []
+            }
             labels={{
               buttonLabel: 'Select user...',
               inputLabel: 'Search user...',
