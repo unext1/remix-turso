@@ -9,10 +9,11 @@ CREATE TABLE `user` (
 --> statement-breakpoint
 CREATE TABLE `invitation` (
 	`id` text PRIMARY KEY DEFAULT (uuid4()) NOT NULL,
-	`email` text,
-	`workplace_id` text,
 	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	FOREIGN KEY (`workplace_id`) REFERENCES `workplace`(`id`) ON UPDATE no action ON DELETE no action
+	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`email` text NOT NULL,
+	`workplace_id` text,
+	FOREIGN KEY (`workplace_id`) REFERENCES `workplace`(`id`) ON UPDATE restrict ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `workplace_member` (
@@ -32,4 +33,5 @@ CREATE TABLE `workplace` (
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `user_email_unique` ON `user` (`email`);
+CREATE UNIQUE INDEX `user_email_unique` ON `user` (`email`);--> statement-breakpoint
+CREATE UNIQUE INDEX `invitation_unique_workplace_id_email_key` ON `invitation` (`workplace_id`,`email`);

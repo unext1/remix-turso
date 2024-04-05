@@ -1,5 +1,0 @@
-CREATE TABLE `user` (
-	`id` text PRIMARY KEY DEFAULT (uuid4()) NOT NULL,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
