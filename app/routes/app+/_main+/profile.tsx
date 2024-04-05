@@ -1,18 +1,17 @@
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
-import { Form, useActionData, useLoaderData, useLocation, useNavigation } from '@remix-run/react';
+import { useActionData, useLoaderData, useLocation, useNavigation } from '@remix-run/react';
 import { eq } from 'drizzle-orm';
 import { useEffect } from 'react';
 import { z } from 'zod';
-import { zx } from 'zodix';
 import { CustomForm } from '~/components/custom-form';
 
 import { Button } from '~/components/ui/button';
 import { Card } from '~/components/ui/card';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
-import { H4, P } from '~/components/ui/typography';
+import { H4 } from '~/components/ui/typography';
 import { useToast } from '~/components/ui/use-toast';
 import { db } from '~/db';
 import { userTable } from '~/db/schema';
@@ -64,7 +63,6 @@ const ProfilePage = () => {
   // const fetcher = useFetcher<typeof imageAction>();
   // const imageUpload = fetcher.formData?.get('intent') === 'uploadImage';
   useEffect(() => {
-    console.log(JSON.stringify(lastResult, null, 4));
     if (lastResult?.initialValue?.name) {
       toast({
         title: 'Name Change',
