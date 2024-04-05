@@ -16,7 +16,8 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     with: {
       workplaceMembers: {
         with: {
-          user: true
+          user: true,
+          workplace: true
         }
       },
       owner: true,
@@ -25,7 +26,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     where: (workplace, { eq }) => eq(workplace.id, workplaceId)
   });
 
-  return json({ user, workplaceData });
+  return json({ user, workplaceData: { ...workplaceData, isOwner: workplaceData?.ownerId === user.id } });
 };
 
 const appLinks = [
