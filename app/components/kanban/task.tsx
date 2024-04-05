@@ -91,7 +91,7 @@ const Task = ({
       <motion.div
         layout
         layoutId={String(id)}
-        className="flex justify-between items-center bg-background p-2 rounded-md cursor-grab active:cursor-grabbing"
+        className="flex justify-between items-center bg-muted p-2 rounded-md cursor-grab active:cursor-grabbing"
         draggable="true"
         onDragStart={(e: DragEvent) => handleDragStart(e, { name, id, columnId, ownerId })}
       >
