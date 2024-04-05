@@ -64,6 +64,7 @@ const TeamPage = () => {
   const dashboardData = useAppDashboardData();
 
   const tableUsers = dashboardData?.workplaceMembers?.map((member) => ({
+    id: member.user.id,
     name: member.user.name,
     email: member.user.email,
     role: member.workplace.ownerId === member.userId ? 'owner' : 'user'
