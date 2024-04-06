@@ -55,7 +55,7 @@ export function EditableText({
         required
         ref={inputRef}
         type="text"
-        className="w-full text-sm font-semibold"
+        className="w-full text-base font-semibold"
         aria-label={inputLabel}
         name={fieldName}
         defaultValue={value}
@@ -77,10 +77,10 @@ export function EditableText({
     </fetcher.Form>
   ) : (
     <Button
-      variant="default"
+      variant="ghost"
       aria-label={buttonLabel}
       type="button"
-      className="text-sm justify-start h-9 w-full px-[13px] font-semibold "
+      className="text-base justify-start h-9 w-full px-[13px] font-semibold "
       ref={buttonRef}
       onClick={() => {
         flushSync(() => {
