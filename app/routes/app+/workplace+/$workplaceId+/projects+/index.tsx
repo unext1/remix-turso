@@ -67,17 +67,17 @@ export async function action({ request, params }: ActionFunctionArgs) {
       .insert(projectColumnTable)
       .values([
         {
-          name: 'To Do',
+          name: '💡 To Do',
           order: 1,
           projectId: newProject[0].id
         },
         {
-          name: 'In Progress',
+          name: '⏳ In Progress',
           order: 2,
           projectId: newProject[0].id
         },
         {
-          name: 'Done',
+          name: '💰 Done',
           order: 3,
           projectId: newProject[0].id
         }
