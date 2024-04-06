@@ -29,7 +29,8 @@ export default function Index() {
   return (
     <div>
       <Navbar userId={userId || null} />
-      <section className="pb-16 pt-36 lg:py-40 ">
+
+      <section className="pb-16 pt-36 lg:py-48 ">
         <div
           className="container flex max-w-[54rem] opacity-0 animate-fade-up flex-col items-center gap-5 text-center"
           style={{ animationFillMode: 'forwards' }}
@@ -48,9 +49,9 @@ export default function Index() {
             </span>
           </h1>
 
-          <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
-            Empower your financial management with AI-driven insights, making tracking and optimizing your finances
-            effortless.
+          <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-lg sm:leading-8">
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quae ut aut perferendis repudiandae debitis quidem
+            voluptatum pariatur.
           </p>
 
           <div className="flex justify-center space-x-2 md:space-x-4">
@@ -68,20 +69,9 @@ export default function Index() {
               <p className="pl-2 ">{userId ? 'Go to App' : 'Login'}</p>
             </Link>
           </div>
-          <a href="#skills" className="flex animate-bounce text-muted-foreground">
-            <MouseIcon className="w-4 my-auto" /> Scroll to see more content
+          <a href="#skills" className="flex mt-8 text-sm animate-bounce text-muted-foreground">
+            <MouseIcon className="w-4 -mt-0.5" /> Scroll to see more content
           </a>
-        </div>
-      </section>
-      <section className="space-y-6 pb-12 pt-16 lg:py-52">
-        <div className="container flex max-w-[54rem] flex-col items-center gap-5 text-center">
-          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-            Revolutionize Your Financial Management
-          </h1>
-          <p className="text-muted-foreground tracking-wide text-lg max-w-[42rem]">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem recusandae iure labore inventore,
-            voluptatibus veritatis
-          </p>
         </div>
       </section>
     </div>
