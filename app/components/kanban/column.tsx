@@ -41,7 +41,6 @@ const Column = ({ name, columnId, tasks }: ColumnProps) => {
 
   return (
     <Card
-      draggable="true"
       className={'flex-shrink-0 flex flex-col max-h-full w-80 p-6 ' + (acceptDrop ? 'border border-primary' : '')}
       onDragOver={(event) => {
         if (tasks.length === 0 && event.dataTransfer.types.includes('application/remix-card')) {
@@ -64,7 +63,7 @@ const Column = ({ name, columnId, tasks }: ColumnProps) => {
           name: transfer.name,
           ownerId: transfer.ownerId,
           projectId: transfer.projectId,
-          content: ''
+          content: transfer.content
         };
 
         submit(
@@ -122,14 +121,14 @@ const Column = ({ name, columnId, tasks }: ColumnProps) => {
         <div className="p-2 ">
           <Button
             type="button"
-            variant="ghost"
+            variant="muted"
             onClick={() => {
               flushSync(() => {
                 setEdit(true);
               });
               scrollList();
             }}
-            className="w-full"
+            className="w-full py-6"
           >
             <PlusIcon className="w-4 h-4" /> Add a task
           </Button>
