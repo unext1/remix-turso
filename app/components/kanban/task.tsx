@@ -24,11 +24,17 @@ const Task = ({
 
   const handleDragStart = (
     e: DragEvent,
-    { id, name, columnId, ownerId }: { id: string; name: string; columnId: string; ownerId: string | null }
+    {
+      id,
+      name,
+      columnId,
+      ownerId,
+      content
+    }: { id: string; name: string; columnId: string; ownerId: string | null; content: string | null }
   ) => {
     if (!e || !e.dataTransfer) return;
     e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('application/remix-card', JSON.stringify({ id, name, columnId, ownerId }));
+    e.dataTransfer.setData('application/remix-card', JSON.stringify({ id, name, columnId, ownerId, content }));
   };
   return (
     <li
@@ -91,12 +97,17 @@ const Task = ({
       <motion.div
         layout
         layoutId={String(id)}
-        className="flex justify-between items-center bg-muted p-2 rounded-md cursor-grab active:cursor-grabbing"
+        className="bg-muted p-2 flex justify-between items-center rounded-md cursor-grab active:cursor-grabbing"
         draggable="true"
-        onDragStart={(e: DragEvent) => handleDragStart(e, { name, id, columnId, ownerId })}
+        onDragStart={(e: DragEvent) => handleDragStart(e, { name, id, columnId, ownerId, content })}
       >
-        <h1 className="flex-1 shrink-0">{name}</h1>
-        <removeFetcher.Form method="post">
+        <div>
+          <p className="text-xs uppercase text-gray-400">Sep 9</p>
+          <h3 className="flex-1 shrink-0 mt-2 font-semibold">{name}</h3>
+          <div className="mt-2 border-t text-gray-400">{content}</div>
+        </div>
+
+        <removeFetcher.Form method="post" className="my-auto">
           <input type="hidden" name="intent" value="removeTask" />
           <input type="hidden" name="taskId" value={id} />
           <Button
