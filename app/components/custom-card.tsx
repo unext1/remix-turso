@@ -25,7 +25,7 @@ export const CustomCard = ({ name, workplaceId, projectId, ownerId, userId, user
 
         <CardDescription>Invite your team members to collaborate.</CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-6 ">
+      <CardContent className=" ">
         <div className="flex items-center justify-between space-x-4 rounded">
           <div className="flex items-center space-x-4">
             <div>
@@ -34,7 +34,7 @@ export const CustomCard = ({ name, workplaceId, projectId, ownerId, userId, user
           </div>
         </div>
         {projectId ? (
-          <div className={ownerId === userId ? 'flex justify-between' : 'w-full'}>
+          <div className="flex flex-col mt-6">
             <Link
               to={$path('/app/workplace/:workplaceId/projects/:projectId', {
                 projectId: projectId || '',
@@ -48,6 +48,7 @@ export const CustomCard = ({ name, workplaceId, projectId, ownerId, userId, user
 
             {ownerId === userId ? (
               <Link
+                className="mt-4"
                 to={$path('/app/workplace/:workplaceId/projects/:projectId/settings', {
                   projectId: projectId || '',
                   workplaceId: workplaceId
