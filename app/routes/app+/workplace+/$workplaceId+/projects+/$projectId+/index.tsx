@@ -64,16 +64,16 @@ export async function action({ request, params }: ActionFunctionArgs) {
     case 'createTask': {
       const name = String(formData.get('name') || '');
       const columnId = String(formData.get('columnId') || '');
+      const content = String(formData.get('content') || '');
       const order = Number(formData.get('order') || 0);
-
-      console.log(name, columnId, order, projectId, user.id);
 
       return workplaceDb(workplaceId).insert(projectTaskTable).values({
         columnId,
         name,
         order,
         ownerId: user.id,
-        projectId: projectId
+        projectId: projectId,
+        content
       });
     }
     case 'removeColumn': {
@@ -245,7 +245,8 @@ function usePendingTasks() {
       const order = Number(fetcher.formData.get('order'));
       const projectId = String(fetcher.formData.get('projectId'));
       const ownerId = String(fetcher.formData.get('ownerId'));
-      const item: RenderedItem = { name, id, order, columnId, content: '', projectId, ownerId };
+      const content = String(fetcher.formData.get('content'));
+      const item: RenderedItem = { name, id, order, columnId, content, projectId, ownerId };
       return item;
     });
 }
