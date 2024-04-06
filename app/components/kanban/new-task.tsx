@@ -4,6 +4,7 @@ import { Form, useSubmit } from '@remix-run/react';
 
 import { CancelButton, SaveButton } from './editible-text';
 import { Textarea } from '../ui/textarea';
+import { Input } from '../ui/input';
 
 export function NewTask({
   columnId,
@@ -17,6 +18,8 @@ export function NewTask({
   onAddCard: () => void;
 }) {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const buttonRef = useRef<HTMLButtonElement>(null);
   const submit = useSubmit();
 
@@ -38,7 +41,12 @@ export function NewTask({
 
         if (!textAreaRef.current) throw Error('No Text Area');
         textAreaRef.current.value = '';
+
+        if (!inputRef.current) throw Error('No title');
+        inputRef.current.value = '';
+
         onAddCard();
+        inputRef.current.focus();
       }}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
@@ -50,12 +58,31 @@ export function NewTask({
       <input type="hidden" name="columnId" value={columnId} />
       <input type="hidden" name="order" value={nextOrder} />
 
-      <Textarea
+      <Input
         autoFocus
         required
-        ref={textAreaRef}
+        ref={inputRef}
         name="name"
-        placeholder="Enter a title for this task"
+        placeholder="Title"
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            if (!buttonRef.current) {
+              throw Error('expected button ref');
+            }
+            buttonRef.current.click();
+          }
+          if (event.key === 'Escape') {
+            onComplete();
+          }
+        }}
+      />
+
+      <Textarea
+        ref={textAreaRef}
+        name="content"
+        className="mt-2"
+        placeholder="Task content..."
         onKeyDown={(event) => {
           if (event.key === 'Enter') {
             event.preventDefault();
