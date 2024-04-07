@@ -61,7 +61,7 @@ export const CustomCard = ({ name, workplaceId, projectId, ownerId, userId, user
             ) : null}
           </div>
         ) : (
-          <div className="w-full">
+          <div className="w-full mt-6">
             <Link
               to={$path('/app/workplace/:workplaceId', {
                 workplaceId: workplaceId
