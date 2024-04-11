@@ -1,5 +1,6 @@
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
+import { CheckIcon, XIcon } from 'lucide-react';
 import { $path } from 'remix-routes';
 
 import { Button } from '~/components/ui/button';
@@ -24,16 +25,16 @@ const InvitationPage = () => {
 
   return (
     <div>
-      <H4 className="tracking-wide mb-6">Invitations</H4>
+      <H4 className="tracking-wide mb-6">Workplace Invitations</H4>
 
       <Card className="p-6">
         <Table>
-          <TableCaption>Your Invitations</TableCaption>
+          <TableCaption>Your Invitations To Workplace</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">Status</TableHead>
               <TableHead className="w-[100px]">Workplace</TableHead>
-              <TableHead> Email</TableHead>
+              <TableHead>Email</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -48,11 +49,11 @@ const InvitationPage = () => {
                       <fetcher.Form method="post" action={$path('/api/workplace/invitation')}>
                         <input type="hidden" name="invitationId" value={invitation.id || ''} />
                         <input type="hidden" name="workplaceId" value={invitation.workplaceId || ''} />
-                        <Button variant="default" name="_action" value="accept" className="mr-4" size="sm">
-                          √
+                        <Button variant="muted" name="_action" value="accept" className="mr-4" size="icon">
+                          <CheckIcon className="w-4 h-4" />
                         </Button>
-                        <Button variant="destructive" name="_action" value="decline" size="sm">
-                          X
+                        <Button variant="destructive" name="_action" value="decline" size="icon">
+                          <XIcon className="w-4 h-4" />
                         </Button>
                       </fetcher.Form>
                     </TableCell>
