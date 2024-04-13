@@ -9,9 +9,11 @@ const migrateAllWorkplaceDbs = async () => {
 
   const workpalceIds = getAllWorkplaces.map((w) => w.id);
 
+  console.log('migrating...');
   for (const workplaceId of workpalceIds) {
     await migrate(workplaceDb(workplaceId), { migrationsFolder: MIGRATION_FOLDER });
   }
+  console.log('migration done');
 };
 
 void migrateAllWorkplaceDbs();
