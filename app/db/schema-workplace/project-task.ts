@@ -1,8 +1,11 @@
 import { relations, sql } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
-import { workplaceUser } from './user';
+
 import { projectTable } from './project';
 import { projectColumnTable } from './project-column';
+import { taskAssigneesTable } from './task-assignees';
+import { taskTimesheetTable } from './task-timesheet';
+import { workplaceUser } from './user';
 
 //Task
 export const projectTaskTable = sqliteTable('project_task', {
@@ -21,7 +24,7 @@ export const projectTaskTable = sqliteTable('project_task', {
     .notNull()
 });
 
-export const projectTaskRelations = relations(projectTaskTable, ({ one }) => ({
+export const projectTaskRelations = relations(projectTaskTable, ({ one, many }) => ({
   owner: one(workplaceUser, {
     fields: [projectTaskTable.ownerId],
     references: [workplaceUser.id]
@@ -33,5 +36,7 @@ export const projectTaskRelations = relations(projectTaskTable, ({ one }) => ({
   project: one(projectTable, {
     fields: [projectTaskTable.projectId],
     references: [projectTable.id]
-  })
+  }),
+  timesheets: many(taskTimesheetTable),
+  assigness: many(taskAssigneesTable)
 }));
