@@ -2,7 +2,6 @@ import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-r
 import { Form, useLoaderData } from '@remix-run/react';
 import { eq } from 'drizzle-orm';
 import { $params, $path } from 'remix-routes';
-import { z } from 'zod';
 
 import { Button } from '~/components/ui/button';
 import { Card } from '~/components/ui/card';
@@ -19,7 +18,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   const { projectId, workplaceId } = $params('/app/workplace/:workplaceId/projects/:projectId', params);
 
-  // TODO check if owner of project
+  // TODO: check if owner of project
 
   // const ownerofProject = user?.ownerOfProject.map((project) => project.id);
 
