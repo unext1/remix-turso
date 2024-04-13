@@ -41,3 +41,14 @@ CREATE TABLE `project_member` (
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE no action
 );
+--> statement-breakpoint
+CREATE TABLE `task_timesheet` (
+	`id` text PRIMARY KEY DEFAULT (uuid4()) NOT NULL,
+	`description` text,
+	`startTime` text NOT NULL,
+	`stopTime` text,
+	`userId` text,
+	`task_Id` text NOT NULL,
+	FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE set null,
+	FOREIGN KEY (`task_Id`) REFERENCES `project_task`(`id`) ON UPDATE no action ON DELETE cascade
+);
