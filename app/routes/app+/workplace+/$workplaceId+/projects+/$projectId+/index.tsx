@@ -1,16 +1,17 @@
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
-import { useFetchers, useLoaderData } from '@remix-run/react';
+import { Link, useFetchers, useLoaderData } from '@remix-run/react';
 import { eq } from 'drizzle-orm';
 import { useRef } from 'react';
-import { $params } from 'remix-routes';
+import { $params, $path } from 'remix-routes';
 
 import Column from '~/components/kanban/column';
 import { NewColumn } from '~/components/kanban/new-column';
+import { buttonVariants } from '~/components/ui/button';
 import { H4 } from '~/components/ui/typography';
 import { workplaceDb } from '~/db';
 import { projectColumnTable, projectTable, projectTaskTable } from '~/db/schema-workplace';
-
 import { requireUser } from '~/services/auth.server';
+import { cn } from '~/utils';
 
 export interface RenderedItem {
   id: string;
@@ -137,11 +138,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     where: eq(projectTable.id, projectId)
   });
 
-  return json({ project: project[0], user, workplaceId });
+  return json({ project: project[0], user, workplaceId, projectId });
 }
 
 const ProjectPage = () => {
-  const { project, user, workplaceId } = useLoaderData<typeof loader>();
+  const { project, user, workplaceId, projectId } = useLoaderData<typeof loader>();
 
   const tasksById = new Map(project.tasks.map((item) => [item.id, item]));
 
@@ -181,7 +182,15 @@ const ProjectPage = () => {
 
   return (
     <div>
-      <H4 className="mb-6 capitalize tracking-wide">Project / {project.name}</H4>
+      <div className="flex justify-between">
+        <H4 className="mb-6 capitalize tracking-wide">Project / {project.name}</H4>
+        <Link
+          to={$path('/app/workplace/:workplaceId/projects/:projectId/settings', { projectId, workplaceId })}
+          className={cn(buttonVariants({ variant: 'default', size: 'sm' }), '')}
+        >
+          Project Settings
+        </Link>
+      </div>
       <div className="h-full flex flex-col overflow-x-scroll" ref={scrollContainerRef}>
         <div className="flex flex-grow h-full items-start gap-4 pb-4">
           {[...columns.values()].map((col, index, cols) => {
@@ -246,7 +255,15 @@ function usePendingTasks() {
       const projectId = String(fetcher.formData.get('projectId'));
       const ownerId = String(fetcher.formData.get('ownerId'));
       const content = String(fetcher.formData.get('content'));
-      const item: RenderedItem = { name, id, order, columnId, content, projectId, ownerId };
+      const item: RenderedItem = {
+        name,
+        id,
+        order,
+        columnId,
+        content,
+        projectId,
+        ownerId
+      };
       return item;
     });
 }
