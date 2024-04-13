@@ -1,7 +1,7 @@
+import { relations } from 'drizzle-orm';
 import { primaryKey, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core';
 import { abstractTable } from '../abstract-table';
 import { userTable } from './user';
-import { relations } from 'drizzle-orm';
 
 export const workplaceTable = abstractTable('workplace', {
   name: text('name'),
