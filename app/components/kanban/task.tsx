@@ -122,7 +122,8 @@ const Task = ({
           onDragStart={(e: DragEvent) => handleDragStart(e, { name, id, columnId, ownerId, content })}
         >
           <div>
-            <p className="text-xs uppercase text-gray-400">Sep 9</p>
+            {/* TODO: Add time when task was created. */}
+            <p className="text-xs uppercase text-gray-400"></p>
             <h3 className="flex-1 shrink-0 mt-2 font-semibold">{name}</h3>
             <div className="mt-2 border-t text-gray-400">{content}</div>
           </div>
