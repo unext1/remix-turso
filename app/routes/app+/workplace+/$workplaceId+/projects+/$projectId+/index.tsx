@@ -9,7 +9,7 @@ import { NewColumn } from '~/components/kanban/new-column';
 import { buttonVariants } from '~/components/ui/button';
 import { H4 } from '~/components/ui/typography';
 import { workplaceDb } from '~/db';
-import { projectColumnTable, projectTable, projectTaskTable } from '~/db/schema-workplace';
+import { projectColumnTable, projectTable, projectTaskTable, taskAssigneesTable } from '~/db/schema-workplace';
 import { requireUser } from '~/services/auth.server';
 import { cn } from '~/utils';
 
@@ -48,19 +48,21 @@ export async function action({ request, params }: ActionFunctionArgs) {
       const name = String(formData.get('name') || '');
       const projectId = String(formData.get('projectId') || '');
 
-      const columnCount = await workplaceDb(workplaceId)
-        .select()
-        .from(projectColumnTable)
-        .where(eq(projectColumnTable.projectId, projectId))
-        .all();
+      await workplaceDb(workplaceId).transaction(async (tx) => {
+        const columnCount = await tx
+          .select()
+          .from(projectColumnTable)
+          .where(eq(projectColumnTable.projectId, projectId))
+          .all();
 
-      return workplaceDb(workplaceId)
-        .insert(projectColumnTable)
-        .values({
+        return await tx.insert(projectColumnTable).values({
           name,
           projectId,
           order: columnCount.length + 1
         });
+      });
+
+      return {};
     }
     case 'createTask': {
       const name = String(formData.get('name') || '');
@@ -68,14 +70,25 @@ export async function action({ request, params }: ActionFunctionArgs) {
       const content = String(formData.get('content') || '');
       const order = Number(formData.get('order') || 0);
 
-      return workplaceDb(workplaceId).insert(projectTaskTable).values({
-        columnId,
-        name,
-        order,
-        ownerId: user.id,
-        projectId: projectId,
-        content
+      await workplaceDb(workplaceId).transaction(async (tx) => {
+        const task = await tx
+          .insert(projectTaskTable)
+          .values({
+            columnId,
+            name,
+            order,
+            ownerId: user.id,
+            projectId: projectId,
+            content
+          })
+          .returning();
+
+        await tx.insert(taskAssigneesTable).values({
+          userId: user.id,
+          taskId: task[0].id
+        });
       });
+      return {};
     }
     case 'removeColumn': {
       const columnId = String(formData.get('columnId') || 0);
@@ -218,6 +231,7 @@ function usePendingColumns() {
       const name = String(fetcher.formData.get('name'));
       const id = String(fetcher.formData.get('id'));
       const order = Number(fetcher.formData.get('order'));
+
       return { name, id, order };
     });
 }
