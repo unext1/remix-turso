@@ -96,18 +96,59 @@ const AppPage = () => {
         </Dialog>
       </div>
 
-      <div className="grid sm:grid-cols-2 grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {workplaces.map((workplace) => (
-          <CustomCard
-            name={workplace.name || ''}
-            ownerId={workplace.ownerId}
-            key={workplace.id}
-            userId={user.id}
-            workplaceId={workplace.id}
-            userEmail={workplace.owner.email}
-          />
-        ))}
-      </div>
+      {workplaces.length >= 1 ? (
+        workplaces.map((workplace) => (
+          <div className="grid sm:grid-cols-2 grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-4" key={workplace.id}>
+            <CustomCard
+              name={workplace.name || ''}
+              ownerId={workplace.ownerId}
+              userId={user.id}
+              workplaceId={workplace.id}
+              userEmail={workplace.owner.email}
+            />
+          </div>
+        ))
+      ) : (
+        <div className="flex flex-1 items-center justify-center rounded-lg border shadow-sm w-full h-full">
+          <div className="flex flex-col items-center gap-1 text-center">
+            <h3 className="text-2xl font-bold tracking-tight">You have no Workplaces</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              You can start as soon as you create your first Workplace.
+            </p>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="default" size="sm" className="px-6">
+                  Create Workplace
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Create Workplace</DialogTitle>
+                  <DialogDescription>
+                    Make changes to your profile here. Click save when you&apos;re done.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <CustomForm method="post" className="grid gap-4 py-4" {...getFormProps(form)}>
+                  <div className="grid grid-cols-6 items-center gap-4">
+                    <Input {...getInputProps(ownerId, { type: 'text' })} type="hidden" value={user.id} />
+                    <Label htmlFor={name.id} className="text-right col-span-2 text-sm whitespace-nowrap w-fit">
+                      Workplace Name
+                    </Label>
+                    <Input
+                      {...getInputProps(name, { type: 'text' })}
+                      placeholder="Workplace Name"
+                      className="col-span-4"
+                    />
+                    {name.errors && <p className="text-red-400 mt-2 uppercase text-sm">{name.errors}</p>}
+                  </div>
+                  <Button type="submit">Save changes</Button>
+                </CustomForm>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
