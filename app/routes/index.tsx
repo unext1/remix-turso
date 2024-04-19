@@ -1,3 +1,4 @@
+import { TwitterLogoIcon } from '@radix-ui/react-icons';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, json, useLoaderData, type MetaFunction } from '@remix-run/react';
 import { MailIcon, MouseIcon } from 'lucide-react';
@@ -30,7 +31,7 @@ export default function Index() {
     <div>
       <Navbar userId={userId || null} />
 
-      <section className="pb-16 pt-36 lg:py-48 ">
+      <section className="pb-16 pt-36 lg:pt-48 lg:pb-20 ">
         <div
           className="container flex max-w-[54rem] opacity-0 animate-fade-up flex-col items-center gap-5 text-center"
           style={{ animationFillMode: 'forwards' }}
@@ -39,7 +40,7 @@ export default function Index() {
             to="https://twitter.com/lauvadev"
             className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), '')}
           >
-            Made by Lauva.dev
+            Follow us on <TwitterLogoIcon className="w-6 h-4 mt-2 pl-1 my-auto" />
           </Link>
 
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
@@ -73,6 +74,9 @@ export default function Index() {
             <MouseIcon className="w-4 -mt-0.5" /> Scroll to see more content
           </a>
         </div>
+      </section>
+      <section className="pb-20">
+        <img src="/bg.png" alt="bg of project" className="mx-auto max-w-5xl rounded-xl border-2" />
       </section>
     </div>
   );
