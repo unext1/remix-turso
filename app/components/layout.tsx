@@ -4,7 +4,6 @@ import { type ForwardRefExoticComponent } from 'react';
 import { $path } from 'remix-routes';
 
 import { Button } from '~/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,7 +55,10 @@ export const AppLayout = ({
             </nav>
           </div>
           <div className="mt-auto p-4">
-            <Card>
+            <Form method="post" action={$path('/auth/logout')}>
+              <Button className="w-full">Logout</Button>
+            </Form>
+            {/* <Card>
               <CardHeader className="p-2 pt-0 md:p-4">
                 <CardTitle>Upgrade to Pro</CardTitle>
                 <CardDescription>Unlock all features and get unlimited access to our support team.</CardDescription>
@@ -66,7 +68,7 @@ export const AppLayout = ({
                   Upgrade
                 </Button>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
       </div>
@@ -89,7 +91,7 @@ export const AppLayout = ({
                 <NavLinksComponent appLinks={appLinks} navLinks={navLinks} />
               </nav>
               <div className="mt-auto">
-                <Card>
+                {/* <Card>
                   <CardHeader>
                     <CardTitle>Upgrade to Pro</CardTitle>
                     <CardDescription>Unlock all features and get unlimited access to our support team.</CardDescription>
@@ -99,7 +101,7 @@ export const AppLayout = ({
                       Upgrade
                     </Button>
                   </CardContent>
-                </Card>
+                </Card> */}
               </div>
             </SheetContent>
           </Sheet>
