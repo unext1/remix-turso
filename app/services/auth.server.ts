@@ -63,7 +63,7 @@ export type SessionUser = Awaited<ReturnType<typeof requireUser>>;
 
 export const requireUser = async ({ request, params }: { request: Request; params: Params }) => {
   const userId = await authenticator.isAuthenticated(request);
-  if (!userId) throw redirect($path('/'));
+  if (!userId) throw redirect($path('/login'));
 
   const sessionUser = await getUser({ userId: userId });
   if (!sessionUser) return await authenticator.logout(request, { redirectTo: $path('/login') });
