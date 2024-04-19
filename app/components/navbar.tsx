@@ -25,17 +25,6 @@ export const Navbar = ({ userId }: { userId?: string | null }) => {
             >
               Home
             </NavLink>
-            <NavLink
-              to="/abc"
-              className={({ isActive }) =>
-                cn({
-                  'text-muted-foreground text-sm hover:text-primary': true,
-                  'text-white-content': isActive
-                })
-              }
-            >
-              Something
-            </NavLink>
           </div>
         </div>
         <Button>
