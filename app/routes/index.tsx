@@ -44,9 +44,10 @@ export default function Index() {
           </Link>
 
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            Field Service App To Control{' '}
+            Empower Your Business On-The-Go with Our
             <span className="relative bg-gradient-to-r from-red-400 to-red-600 bg-clip-text font-extrabold text-transparent">
-              Your Buisness
+              {' '}
+              Field Service App
             </span>
           </h1>
 
