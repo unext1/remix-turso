@@ -1,4 +1,4 @@
-import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
+import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
 import { eq } from 'drizzle-orm';
 import { $params, $path } from 'remix-routes';
@@ -14,17 +14,9 @@ import { useAppDashboardData } from '~/hooks/routes-hooks';
 import { requireUser } from '~/services/auth.server';
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  await requireUser({ params, request });
+  const user = await requireUser({ params, request });
 
   const { projectId, workplaceId } = $params('/app/workplace/:workplaceId/projects/:projectId', params);
-
-  // TODO: check if owner of project
-
-  // const ownerofProject = user?.ownerOfProject.map((project) => project.id);
-
-  // if (!ownerofProject.find((i) => i === Number(projectId))) {
-  //   throw redirect($path('/app/workplace/:workplaceId/projects', { workplaceId: workplaceId }));
-  // }
 
   const project = await workplaceDb(workplaceId).query.projectTable.findFirst({
     with: {
@@ -37,6 +29,10 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     },
     where: eq(projectTable.id, projectId)
   });
+
+  if (project?.ownerId !== user.id) {
+    throw redirect($path('/app/workplace/:workplaceId/projects', { workplaceId: workplaceId }));
+  }
 
   return json({ project });
 };
