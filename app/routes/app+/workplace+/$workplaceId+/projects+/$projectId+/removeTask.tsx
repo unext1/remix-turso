@@ -14,6 +14,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData();
   const taskId = String(formData.get('taskId') || 0);
 
+  // TODO: Check if owner removing task
   await workplaceDb(workplaceId).delete(projectTaskTable).where(eq(projectTaskTable.id, taskId));
   return redirect($path('/app/workplace/:workplaceId/projects/:projectId', { projectId, workplaceId }));
 }
