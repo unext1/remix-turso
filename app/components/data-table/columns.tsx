@@ -2,7 +2,6 @@ import { type ColumnDef } from '@tanstack/react-table';
 import { type z } from 'zod';
 
 import { roles, type tableSchema } from '~/utils/team-table';
-import { Checkbox } from '~/components/ui/checkbox';
 import { DataTableColumnHeader } from './data-table-column-header';
 import { DataTableRowActions } from './data-table-row-actions';
 
