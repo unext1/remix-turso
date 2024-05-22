@@ -213,7 +213,7 @@ const ProjectSettings = () => {
                     <TableCell className="flex justify-end">
                       <Form
                         method="post"
-                        action={$path('/app/workplace/:workplaceId/projects/:projectId/removeWorkplace', {
+                        action={$path('/app/workplace/:workplaceId/projects/:projectId/removeProject', {
                           projectId,
                           workplaceId
                         })}
