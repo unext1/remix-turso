@@ -1,19 +1,22 @@
 /* eslint-disable jsx-a11y/no-autofocus */
-import { useRef } from 'react';
 import { Form, useSubmit } from '@remix-run/react';
+import { useRef } from 'react';
 
-import { CancelButton, SaveButton } from './editible-text';
-import { Textarea } from '../ui/textarea';
+import { Button } from '../ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
 
 export function NewTask({
   columnId,
   nextOrder,
+  columnName,
   onComplete,
   onAddCard
 }: {
   columnId: string;
   nextOrder: number;
+  columnName: string;
   onComplete: () => void;
   onAddCard: () => void;
 }) {
@@ -23,83 +26,77 @@ export function NewTask({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const submit = useSubmit();
 
+  // const dt = new Date();
+  // const padL = (nr: number, chr = '0') => `${nr}`.padStart(2, chr);
+
+  // const createdAt = `${dt.getFullYear()}-${padL(dt.getMonth() + 1)}-${padL(dt.getDate())} ${padL(dt.getHours())}:${padL(
+  //   dt.getMinutes()
+  // )}:${padL(dt.getSeconds())}`;
+  // console.log(createdAt);
+
   return (
-    <Form
-      method="post"
-      className="px-2 py-1 border-t-2 border-b-2 border-transparent"
-      onSubmit={(event) => {
-        event.preventDefault();
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="muted" size="sm">
+          New Task
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[625px]">
+        <DialogHeader>
+          <DialogTitle className="text-xs">
+            New Task {'>'} {columnName}
+          </DialogTitle>
+        </DialogHeader>
 
-        const formData = new FormData(event.currentTarget);
-
-        submit(formData, {
-          method: 'post',
-          fetcherKey: 'task',
-          navigate: false,
-          unstable_flushSync: true
-        });
-
-        if (!textAreaRef.current) throw Error('No Text Area');
-        textAreaRef.current.value = '';
-
-        if (!inputRef.current) throw Error('No title');
-        inputRef.current.value = '';
-
-        onAddCard();
-        inputRef.current.focus();
-      }}
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) {
-          onComplete();
-        }
-      }}
-    >
-      <input type="hidden" name="intent" value="createTask" />
-      <input type="hidden" name="columnId" value={columnId} />
-      <input type="hidden" name="order" value={nextOrder} />
-
-      <Input
-        autoFocus
-        required
-        ref={inputRef}
-        name="name"
-        placeholder="Title"
-        onKeyDown={(event) => {
-          if (event.key === 'Enter') {
+        <Form
+          method="post"
+          onSubmit={(event) => {
             event.preventDefault();
-            if (!buttonRef.current) {
-              throw Error('expected button ref');
-            }
-            buttonRef.current.click();
-          }
-          if (event.key === 'Escape') {
-            onComplete();
-          }
-        }}
-      />
 
-      <Textarea
-        ref={textAreaRef}
-        name="content"
-        className="mt-2"
-        placeholder="Task content..."
-        onKeyDown={(event) => {
-          if (event.key === 'Enter') {
-            event.preventDefault();
-            if (!buttonRef.current) {
-              throw Error('expected button ref');
-            }
-            buttonRef.current.click();
-          }
-          if (event.key === 'Escape') {
-            onComplete();
-          }
-        }}
-      />
-      <div className="flex justify-between mt-2">
-        <SaveButton ref={buttonRef}>Save Task</SaveButton>
-        <CancelButton onClick={onComplete}>Cancel</CancelButton>
-      </div>
-    </Form>
+            const formData = new FormData(event.currentTarget);
+
+            submit(formData, {
+              method: 'post',
+              fetcherKey: 'task',
+              navigate: false,
+              unstable_flushSync: true
+            });
+
+            if (!textAreaRef.current) throw Error('No Text Area');
+            textAreaRef.current.value = '';
+
+            if (!inputRef.current) throw Error('No title');
+            inputRef.current.value = '';
+
+            onAddCard();
+            inputRef.current.focus();
+          }}
+        >
+          <input type="hidden" name="intent" value="createTask" />
+          <input type="hidden" name="columnId" value={columnId} />
+          <input type="hidden" name="order" value={nextOrder} />
+
+          <Input
+            autoFocus
+            required
+            ref={inputRef}
+            name="name"
+            placeholder="Enter a title for this task..."
+            className="bg-transparent text-lg"
+          />
+
+          <Textarea
+            ref={textAreaRef}
+            name="content"
+            className="mt-4 bg-transparent"
+            placeholder="Enter task content..."
+            rows={6}
+          />
+          <Button size="sm" type="submit" className="mt-2">
+            Save Task
+          </Button>
+        </Form>
+      </DialogContent>
+    </Dialog>
   );
 }
