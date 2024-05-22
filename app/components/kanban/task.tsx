@@ -12,6 +12,7 @@ const Task = ({
   id,
   order,
   columnId,
+  createdAt,
   previousOrder,
   ownerId,
   nextOrder
@@ -20,11 +21,10 @@ const Task = ({
   nextOrder: number;
 }) => {
   const submit = useSubmit();
-  const removeFetcher = useFetcher();
   const [acceptDrop, setAcceptDrop] = useState<'none' | 'top' | 'bottom'>('none');
 
   const params = useParams();
-  const { workplaceId, projectId } = $params('/app/workplace/:workplaceId/projects/:projectId/start-stop', params);
+  const { workplaceId, projectId } = $params('/app/workplace/:workplaceId/projects/:projectId', params);
 
   const handleDragStart = (
     e: DragEvent,
@@ -33,14 +33,15 @@ const Task = ({
       name,
       columnId,
       ownerId,
-      content
-    }: { id: string; name: string; columnId: string; ownerId: string | null; content: string | null }
+      content,
+      createdAt
+    }: { id: string; name: string; columnId: string; ownerId: string | null; content: string | null; createdAt: string }
   ) => {
     if (!e || !e.dataTransfer) return;
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData(
       'application/remix-card',
-      JSON.stringify({ id, name, columnId, ownerId, projectId, content })
+      JSON.stringify({ id, name, columnId, ownerId, projectId, content, createdAt })
     );
   };
 
@@ -50,7 +51,7 @@ const Task = ({
         event.dataTransfer.effectAllowed = 'move';
         event.dataTransfer.setData(
           'application/remix-card',
-          JSON.stringify({ id, name, columnId, ownerId, projectId, content })
+          JSON.stringify({ id, name, columnId, ownerId, projectId, content, createdAt })
         );
       }}
       onDragOver={(event) => {
@@ -75,8 +76,6 @@ const Task = ({
         const droppedOrder = acceptDrop === 'top' ? previousOrder : nextOrder;
         const moveOrder = (droppedOrder + order) / 2;
 
-        console.log(transfer.projectId);
-
         const mutation: TaskType = {
           order: moveOrder,
           columnId: columnId,
@@ -84,7 +83,8 @@ const Task = ({
           name: transfer.name,
           ownerId: transfer.ownerId,
           projectId: transfer.projectId,
-          content: transfer.content
+          content: transfer.content,
+          createdAt: transfer.createdAt
         };
 
         submit(
@@ -99,7 +99,7 @@ const Task = ({
         setAcceptDrop('none');
       }}
       className={
-        'border-t-2 border-b-2 -mb-[2px] last:mb-0 cursor-grab active:cursor-grabbing px-2 py-1 ' +
+        'border-t-2 border-b-2 -mb-[2px] last:mb-0 cursor-grab active:cursor-grabbing py-1 ' +
         (acceptDrop === 'top'
           ? 'border-t-primary border-b-transparent'
           : acceptDrop === 'bottom'
@@ -119,29 +119,13 @@ const Task = ({
           layoutId={String(id)}
           className="bg-muted p-2 flex justify-between items-center rounded-md cursor-grab active:cursor-grabbing"
           draggable="true"
-          onDragStart={(e: DragEvent) => handleDragStart(e, { name, id, columnId, ownerId, content })}
+          onDragStart={(e: DragEvent) => handleDragStart(e, { name, id, columnId, ownerId, content, createdAt })}
         >
           <div>
-            {/* TODO: Add time when task was created. */}
-            <p className="text-xs uppercase text-gray-400"></p>
-            <h3 className="flex-1 shrink-0 mt-2 font-semibold">{name}</h3>
-            <div className="mt-2 border-t text-gray-400">{content}</div>
+            {/* <p className="text-xs uppercase text-gray-400">{createdAt}</p> */}
+            <h3 className="flex-1 shrink-0 text-sm font-semibold">{name}</h3>
+            <p className="mt-2 text-xs text-gray-400 line-clamp-2">{content}</p>
           </div>
-
-          <removeFetcher.Form method="post" className="my-auto">
-            <input type="hidden" name="intent" value="removeTask" />
-            <input type="hidden" name="taskId" value={id} />
-            <Button
-              aria-label="Delete card"
-              className="px-2 h-7"
-              type="submit"
-              onClick={(event) => {
-                event.stopPropagation();
-              }}
-            >
-              <TrashIcon className="w-4 h-4" />
-            </Button>
-          </removeFetcher.Form>
         </motion.div>
       </Link>
     </li>
