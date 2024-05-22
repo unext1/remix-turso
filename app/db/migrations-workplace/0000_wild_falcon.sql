@@ -21,8 +21,17 @@ CREATE TABLE `project_column` (
 	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE TABLE `project_member` (
+	`user_id` text NOT NULL,
+	`project_id` text NOT NULL,
+	PRIMARY KEY(`project_id`, `user_id`),
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
 CREATE TABLE `project_task` (
 	`id` text PRIMARY KEY DEFAULT (uuid4()) NOT NULL,
+	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	`name` text NOT NULL,
 	`content` text,
 	`order` integer NOT NULL,
@@ -34,12 +43,12 @@ CREATE TABLE `project_task` (
 	FOREIGN KEY (`column_id`) REFERENCES `project_column`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE TABLE `project_member` (
+CREATE TABLE `task_assigness` (
 	`user_id` text NOT NULL,
-	`project_id` text NOT NULL,
-	PRIMARY KEY(`project_id`, `user_id`),
+	`task_jd` text NOT NULL,
+	PRIMARY KEY(`task_jd`, `user_id`),
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`task_jd`) REFERENCES `project_task`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `task_timesheet` (

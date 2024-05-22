@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "5b26f3a6-1a29-48ec-9e13-cdcb989a64c1",
-  "prevId": "ff8142fd-ea21-49db-86e7-b391e09f5460",
+  "id": "fc6de8d5-ed0a-42f6-b732-b99b57c77cdd",
+  "prevId": "b4fe6be4-b2ad-4fd9-80c9-3ab2df93ff87",
   "tables": {
     "user": {
       "name": "user",
@@ -219,6 +219,14 @@
           "autoincrement": false,
           "default": "(uuid4())"
         },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
         "name": {
           "name": "name",
           "type": "text",
@@ -430,6 +438,71 @@
         "task_timesheet_task_Id_project_task_id_fk": {
           "name": "task_timesheet_task_Id_project_task_id_fk",
           "tableFrom": "task_timesheet",
+          "tableTo": "project_task",
+          "columnsFrom": [
+            "task_Id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "task_comment": {
+      "name": "task_comment",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(uuid4())"
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "task_Id": {
+          "name": "task_Id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "task_comment_userId_user_id_fk": {
+          "name": "task_comment_userId_user_id_fk",
+          "tableFrom": "task_comment",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "task_comment_task_Id_project_task_id_fk": {
+          "name": "task_comment_task_Id_project_task_id_fk",
+          "tableFrom": "task_comment",
           "tableTo": "project_task",
           "columnsFrom": [
             "task_Id"
