@@ -64,7 +64,7 @@ const AppPage = () => {
   });
 
   return (
-    <div className="flex-1">
+    <div className="h-full flex flex-col">
       <div className="flex justify-between">
         <H4 className="tracking-wide mb-6">Workplaces</H4>
         <Dialog>
@@ -109,7 +109,7 @@ const AppPage = () => {
           </div>
         ))
       ) : (
-        <div className="flex flex-1 items-center justify-center rounded-lg border shadow-sm w-full h-full">
+        <div className="flex flex-1 items-center justify-center rounded-lg border shadow-sm w-full">
           <div className="flex flex-col items-center gap-1 text-center">
             <h3 className="text-2xl font-bold tracking-tight">You have no Workplaces</h3>
             <p className="text-sm text-muted-foreground mb-4">
