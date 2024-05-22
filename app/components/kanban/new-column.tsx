@@ -46,7 +46,18 @@ export function NewColumn({
       <Card className="p-6 flex-shrink-0 flex flex-col gap-4 overflow-hidden max-h-full w-80">
         <input type="hidden" name="intent" value={'createColumn'} />
         <input type="hidden" name="projectId" value={projectId} />
-        <Input autoFocus required ref={inputRef} type="text" name="name" />
+        <Input
+          autoFocus
+          required
+          ref={inputRef}
+          type="text"
+          name="name"
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              setEditing(false);
+            }
+          }}
+        />
         <div className="flex justify-between">
           <SaveButton>Save Column</SaveButton>
           <CancelButton onClick={() => setEditing(false)}>Cancel</CancelButton>
