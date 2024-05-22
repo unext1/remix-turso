@@ -17,7 +17,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     _action: z.enum(['delete', 'leave'])
   });
 
-  //Todo check if user is owner of project
+  //TODO: check if user is owner of project
 
   // const ownerofProject = user.projects.map((i) => i.id);
   // if (!ownerofProject.includes(projectId)) {
