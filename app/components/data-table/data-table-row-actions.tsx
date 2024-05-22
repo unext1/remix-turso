@@ -9,15 +9,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from '~/components/ui/dropdown-menu';
-import { roles, tableSchema } from '~/utils/team-table';
+import { tableSchema } from '~/utils/team-table';
 
 export type Task = z.infer<typeof tableSchema>;
 
@@ -42,27 +36,12 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup value={task.role}>
-              {roles.map((role) => (
-                <DropdownMenuRadioItem key={role.value} value={role.value}>
-                  {role.label}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuSeparator />
         <fetcher.Form
           method="post"
           action={$path('/app/workplace/:workplaceId/team/manage', { workplaceId: workplaceId })}
         >
           <input type="hidden" name="userId" value={task.id} />
-          <button type="submit" name="_action" value="delete">
+          <button type="submit" name="_action" value="delete" className="w-full">
             <DropdownMenuItem>Delete</DropdownMenuItem>
           </button>
         </fetcher.Form>
