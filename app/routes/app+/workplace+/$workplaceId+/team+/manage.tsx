@@ -25,7 +25,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
     if (!ownerWorkplaces.includes(workplaceId)) {
       throw Error('You are not the owner of this workplace');
     }
-    // //Remove Workplace members
     await db
       .delete(workplaceMemberTable)
       .where(and(eq(workplaceMemberTable.workplaceId, workplaceId), eq(workplaceMemberTable.userId, userId)));
