@@ -1,17 +1,38 @@
+import { getFormProps, getInputProps, useForm } from '@conform-to/react';
+import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
-import { Form, useLoaderData } from '@remix-run/react';
+import { Form, useActionData, useFetcher, useLoaderData } from '@remix-run/react';
 import { eq } from 'drizzle-orm';
+import { useEffect, useRef } from 'react';
 import { $params, $path } from 'remix-routes';
+import { z } from 'zod';
+
+import { CustomForm } from '~/components/custom-form';
+import { SaveButton } from '~/components/kanban/editible-text';
 
 import { Button } from '~/components/ui/button';
 import { Card } from '~/components/ui/card';
 import { Combobox } from '~/components/ui/combobox';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '~/components/ui/dialog';
+import { Input } from '~/components/ui/input';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
 import { H4 } from '~/components/ui/typography';
+import { useToast } from '~/components/ui/use-toast';
 import { workplaceDb } from '~/db';
 import { projectMemberTable, projectTable } from '~/db/schema-workplace';
 import { useAppDashboardData } from '~/hooks/routes-hooks';
 import { requireUser } from '~/services/auth.server';
+
+const schema = z.object({
+  userId: z.string().min(1, 'User is required')
+});
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const user = await requireUser({ params, request });
@@ -34,35 +55,42 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     throw redirect($path('/app/workplace/:workplaceId/projects', { workplaceId: workplaceId }));
   }
 
-  return json({ project });
+  return json({ project, projectId, workplaceId });
 };
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   await requireUser({ request, params });
 
   const { projectId, workplaceId } = $params('/app/workplace/:workplaceId/projects/:projectId', params);
-
   const formData = await request.formData();
-  const userId = String(formData.get('userId'));
 
-  if (!userId) {
-    return json({ success: 'false' });
+  const submission = parseWithZod(formData, { schema });
+
+  if (submission.status !== 'success') {
+    return json(submission.reply(), {
+      status: submission.status === 'error' ? 400 : 200
+    });
   }
 
   await workplaceDb(workplaceId).insert(projectMemberTable).values({
     projectId: projectId,
-    userId: userId
+    userId: submission.value.userId
   });
 
-  return json({ success: 'true' });
+  return json(submission.reply());
 };
 
 const ProjectSettings = () => {
-  const { project } = useLoaderData<typeof loader>();
+  const { project, projectId, workplaceId } = useLoaderData<typeof loader>();
+  const lastResult = useActionData<typeof action>();
+
+  const { toast } = useToast();
+
+  const $form = useRef<HTMLFormElement>(null);
+
   const workplaceData = useAppDashboardData();
 
   const exsistingUsersIds = project?.members.map((member) => member.userId);
-
   const users = workplaceData?.workplaceMembers
     ?.filter((member) => !exsistingUsersIds?.includes(member.userId))
     .map((member) => ({
@@ -71,10 +99,103 @@ const ProjectSettings = () => {
       email: member.user.email
     }));
 
+  const [form, { userId }] = useForm({
+    lastResult,
+    onValidate: ({ formData }) => parseWithZod(formData, { schema }),
+    constraint: getZodConstraint(schema),
+    shouldRevalidate: 'onBlur'
+  });
+
+  useEffect(() => {
+    if (lastResult?.initialValue?.userId) {
+      $form.current?.reset();
+      toast({
+        title: 'User has been invited'
+      });
+    }
+  }, [lastResult, toast]);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const fetcher = useFetcher();
+
   return (
     <div>
-      <H4 className="mb-6 capitalize tracking-wide">Project Settings</H4>
+      <div className="flex justify-between">
+        <H4 className="mb-6 capitalize tracking-wide">Project / {project.name} / Settings</H4>
+        <div className="flex gap-4">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="default" size="sm">
+                Invite Member
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Invite Member</DialogTitle>
+                <DialogDescription>Invite member to join your project.</DialogDescription>
+              </DialogHeader>
 
+              <CustomForm method="post" className="grid gap-4 py-4" {...getFormProps(form)} ref={$form}>
+                <Combobox
+                  items={
+                    users?.map((user) => ({
+                      label: user.name || user.email,
+                      value: user.id.toString()
+                    })) || []
+                  }
+                  labels={{
+                    buttonLabel: 'Select user...',
+                    inputLabel: 'Search user...',
+                    notFoundLabel: 'No user found.'
+                  }}
+                  {...getInputProps(userId, { type: 'text' })}
+                />
+                {userId.errors && <p className="text-red-400 mt-2 uppercase text-sm">{userId.errors}</p>}
+                <Button type="submit">Invite </Button>
+              </CustomForm>
+            </DialogContent>
+          </Dialog>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="default" size="sm">
+                Create Column
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Create Column</DialogTitle>
+                {/* <DialogDescription>Create Column</DialogDescription> */}
+              </DialogHeader>
+
+              <fetcher.Form
+                method="post"
+                action={$path(
+                  '/app/workplace/:workplaceId/projects/:projectId',
+                  {
+                    projectId,
+                    workplaceId
+                  },
+                  { index: '' }
+                )}
+              >
+                <input type="hidden" name="intent" value="createColumn" />
+                <input type="hidden" name="projectId" value={projectId} />
+                <Input
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  autoFocus
+                  required
+                  ref={inputRef}
+                  type="text"
+                  name="name"
+                />
+                <div className="flex justify-between mt-4">
+                  <SaveButton type="submit">Save Column</SaveButton>
+                </div>
+              </fetcher.Form>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
       <Card className="p-4 py-6">
         <Table>
           <TableCaption>Project Columns</TableCaption>
@@ -90,10 +211,15 @@ const ProjectSettings = () => {
                   <TableRow key={column.id} draggable={true}>
                     <TableCell>{column?.name}</TableCell>
                     <TableCell className="flex justify-end">
-                      <Form method="post" action={$path('/api/workplace/invitation')}>
-                        <input type="hidden" name="invitationId" value={column.id || ''} />
-                        <input type="hidden" name="projectId" value={column.projectId || ''} />
-                        <Button variant="destructive" name="_action" value="decline" size="sm">
+                      <Form
+                        method="post"
+                        action={$path('/app/workplace/:workplaceId/projects/:projectId/removeWorkplace', {
+                          projectId,
+                          workplaceId
+                        })}
+                      >
+                        <input type="hidden" name="columnId" value={column.id} />
+                        <Button variant="destructive" type="submit" size="sm">
                           X
                         </Button>
                       </Form>
@@ -103,28 +229,6 @@ const ProjectSettings = () => {
               : null}
           </TableBody>
         </Table>
-      </Card>
-
-      <H4 className="tracking-wide mb-6 mt-12">Invite Member</H4>
-
-      <Card className="p-6 mt-4">
-        <Form method="post" className="space-y-4">
-          <Combobox
-            items={
-              users?.map((user) => ({
-                label: user.name || user.email,
-                value: user.id.toString()
-              })) || []
-            }
-            labels={{
-              buttonLabel: 'Select user...',
-              inputLabel: 'Search user...',
-              notFoundLabel: 'No user found.'
-            }}
-            name="userId"
-          />
-          <Button type="submit">Invite</Button>
-        </Form>
       </Card>
     </div>
   );
