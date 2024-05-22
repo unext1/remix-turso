@@ -5,8 +5,17 @@ import { json } from '@remix-run/node';
 import { useActionData } from '@remix-run/react';
 import { $params } from 'remix-routes';
 import { z } from 'zod';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '~/components/ui/dialog';
+import { useToast } from '~/components/ui/use-toast';
+import { useEffect, useRef, useState } from 'react';
 
-import { useState } from 'react';
 import { CustomForm } from '~/components/custom-form';
 import { DataTable } from '~/components/data-table';
 import { columns } from '~/components/data-table/columns';
@@ -57,11 +66,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
     })
     .onConflictDoNothing();
 
-  return json(submission.reply({ resetForm: true }));
+  return json(submission.reply());
 }
 
 const TeamPage = () => {
   const dashboardData = useAppDashboardData();
+
+  const { toast } = useToast();
+
+  const $form = useRef<HTMLFormElement>(null);
 
   const tableUsers = dashboardData?.workplaceMembers?.map((member) => ({
     id: member.user.id,
@@ -82,40 +95,63 @@ const TeamPage = () => {
     shouldRevalidate: 'onBlur'
   });
 
+  useEffect(() => {
+    if (lastResult?.initialValue?.email) {
+      $form.current?.reset();
+      toast({
+        title: 'Invited User',
+        description: `User with email ${lastResult?.initialValue?.email}, has been invited`
+      });
+    }
+  }, [lastResult, toast]);
+
   return (
     <div>
-      <H4 className="tracking-wide mb-6">Team</H4>
+      <div className="flex justify-between">
+        <H4 className="tracking-wide mb-6">Team</H4>
+        {dashboardData?.isOwner ? (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="default" size="sm">
+                Invite Member
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Invite Member</DialogTitle>
+                <DialogDescription>Enter email for member you want to add.</DialogDescription>
+              </DialogHeader>
+
+              <CustomForm method="post" className="grid gap-4 py-4" {...getFormProps(form)} ref={$form}>
+                <div className="grid grid-cols-6 items-center gap-x-4 gap-y-2">
+                  <input type="hidden" name="intent" value="inviteMember" />
+
+                  <Label htmlFor={email.id} className="text-right col-span-2 text-sm whitespace-nowrap w-fit">
+                    Member Email
+                  </Label>
+
+                  <Input
+                    {...getInputProps(email, { type: 'text' })}
+                    onChange={(e) => setShowError(!!usersEmails?.includes(e.target.value.toLowerCase()))}
+                    className="col-span-4"
+                  />
+                </div>
+                {showError ? (
+                  <P className="text-destructive -mt-2 uppercase text-sm">This user already exists</P>
+                ) : null}
+                {email.errors && <p className="text-destructive -mt-2 uppercase text-sm">{email.errors}</p>}
+                <Button type="submit" disabled={showError ? true : false}>
+                  Invite
+                </Button>
+              </CustomForm>
+            </DialogContent>
+          </Dialog>
+        ) : null}
+      </div>
 
       <Card className="p-6 flex-col space-y-8 flex ">
         <DataTable data={tableUsers ? tableUsers : []} columns={columns} />
       </Card>
-
-      {dashboardData?.isOwner ? (
-        <>
-          <H4 className="tracking-wide mb-6 mt-12">Invite Member</H4>
-
-          <Card className="p-6">
-            <CustomForm method="post" className="" {...getFormProps(form)}>
-              <div>
-                <input type="hidden" name="intent" value="inviteMember" />
-
-                <Label htmlFor={email.id} className="text-xs uppercase">
-                  email
-                </Label>
-                <Input
-                  {...getInputProps(email, { type: 'text' })}
-                  onChange={(e) => setShowError(!!usersEmails?.includes(e.target.value.toLowerCase()))}
-                />
-                {showError ? <P className="text-destructive mt-2 uppercase text-sm">This user already exists</P> : null}
-                {email.errors && <p className="text-destructive mt-2 uppercase text-sm">{email.errors}</p>}
-              </div>
-              <div className="flex mt-4">
-                <Button type="submit">Invite</Button>
-              </div>
-            </CustomForm>
-          </Card>
-        </>
-      ) : null}
     </div>
   );
 };
