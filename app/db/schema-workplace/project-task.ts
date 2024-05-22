@@ -6,12 +6,15 @@ import { projectColumnTable } from './project-column';
 import { taskAssigneesTable } from './task-assignees';
 import { taskTimesheetTable } from './task-timesheet';
 import { workplaceUser } from './user';
+import { taskCommentTable } from './task-comments';
 
-//Task
 export const projectTaskTable = sqliteTable('project_task', {
   id: text('id')
     .primaryKey()
     .default(sql`(uuid4())`),
+  createdAt: text('created_at')
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
   name: text('name').notNull(),
   content: text('content'),
   order: integer('order').notNull(),
@@ -38,5 +41,6 @@ export const projectTaskRelations = relations(projectTaskTable, ({ one, many }) 
     references: [projectTable.id]
   }),
   timesheets: many(taskTimesheetTable),
+  comments: many(taskCommentTable),
   assigness: many(taskAssigneesTable)
 }));
