@@ -3,7 +3,7 @@ import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
 import { useActionData, useLoaderData, useLocation, useNavigation } from '@remix-run/react';
 import { eq } from 'drizzle-orm';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { z } from 'zod';
 import { CustomForm } from '~/components/custom-form';
 
@@ -15,7 +15,7 @@ import { H4 } from '~/components/ui/typography';
 import { useToast } from '~/components/ui/use-toast';
 import { db } from '~/db';
 import { userTable } from '~/db/schema';
-// import { type action as imageAction } from '~/routes/api+/images+/$userId.profile-image';
+
 import { requireUser } from '~/services/auth.server';
 
 const schema = z.object({
@@ -41,12 +41,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   await db.update(userTable).set({ name: submission.value.name }).where(eq(userTable.id, user.id));
 
-  return json(submission.reply({}));
+  return json(submission.reply());
 }
 
 const ProfilePage = () => {
   const { user } = useLoaderData<typeof loader>();
   const { toast } = useToast();
+
+  const $form = useRef<HTMLFormElement>(null);
 
   const lastResult = useActionData<typeof action>();
 
@@ -57,13 +59,13 @@ const ProfilePage = () => {
     shouldRevalidate: 'onBlur'
   });
 
-  const location = useLocation();
   const navigation = useNavigation();
   const nameChange = navigation.formData?.get('intent') === 'changeName';
   // const fetcher = useFetcher<typeof imageAction>();
   // const imageUpload = fetcher.formData?.get('intent') === 'uploadImage';
   useEffect(() => {
     if (lastResult?.initialValue?.name) {
+      $form.current?.reset();
       toast({
         title: 'Name Change',
         description: `Your name has been changed to ${lastResult?.initialValue?.name}`
@@ -89,7 +91,7 @@ const ProfilePage = () => {
         </div>
 
         <div className="space-y-4 ">
-          <CustomForm method="post" {...getFormProps(form)}>
+          <CustomForm method="post" {...getFormProps(form)} ref={$form}>
             <input type="hidden" name="intent" value="changeName" />
             <Label className="mb-1" htmlFor="name">
               Name
