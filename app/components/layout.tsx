@@ -143,7 +143,7 @@ export const AppLayout = ({
         </header>
 
         {/* MAIN ELEMENT */}
-        <main className="flex flex-1 gap-4 p-4 lg:gap-6 lg:p-6 flex-col bg-muted/40 bg-red">{children}</main>
+        <main className="flex flex-1 gap-4 p-4 lg:gap-6 lg:p-6 flex-col">{children}</main>
       </div>
     </div>
   );
