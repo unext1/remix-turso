@@ -4,6 +4,7 @@ import { forwardRef, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import { cn } from '~/utils';
 
 export const SaveButton = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>((props, ref) => {
   return <Button ref={ref} tabIndex={0} {...props} variant="default" size="sm" />;
@@ -20,13 +21,15 @@ export function EditableText({
   fieldName,
   value,
   inputLabel,
-  buttonLabel
+  buttonLabel,
+  size
 }: {
   children: React.ReactNode;
   fieldName: string;
   value: string;
   inputLabel: string;
   buttonLabel: string;
+  size?: 'sm' | 'md' | 'lg';
 }) {
   const fetcher = useFetcher();
   const [edit, setEdit] = useState(false);
@@ -55,7 +58,12 @@ export function EditableText({
         required
         ref={inputRef}
         type="text"
-        className="w-full text-base font-semibold"
+        className={cn(
+          size === 'sm' && 'w-full h-8 text-sm font-semibold',
+          size === 'md' && 'w-full h-12 text-sm font-semibold',
+          size === 'lg' && 'w-full h-12 text-xl font-semibold',
+          size === undefined && 'w-full h-8 text-sm font-semibold'
+        )}
         aria-label={inputLabel}
         name={fieldName}
         defaultValue={value}
@@ -80,7 +88,12 @@ export function EditableText({
       variant="ghost"
       aria-label={buttonLabel}
       type="button"
-      className="text-base justify-start h-9 w-full px-[13px] font-semibold "
+      className={cn(
+        size === 'sm' && 'text-sm justify-start h-8 w-full px-[13px] font-semibold ',
+        size === 'md' && 'text-sm justify-start h-8 w-full px-[13px] font-semibold ',
+        size === 'lg' && 'text-xl justify-start h-12 w-full px-[13px] font-semibold ',
+        size === undefined && 'text-sm justify-start h-8 w-full px-[13px] font-semibold '
+      )}
       ref={buttonRef}
       onClick={() => {
         flushSync(() => {
