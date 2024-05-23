@@ -1,11 +1,10 @@
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useFetchers, useLoaderData } from '@remix-run/react';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { useRef } from 'react';
 import { $params, $path } from 'remix-routes';
 
 import Column from '~/components/kanban/column';
-import { NewColumn } from '~/components/kanban/new-column';
 import { buttonVariants } from '~/components/ui/button';
 import { H4 } from '~/components/ui/typography';
 import { workplaceDb } from '~/db';
@@ -17,6 +16,7 @@ export interface RenderedItem {
   id: string;
   name: string;
   order: number;
+  createdAt: string;
   content: string | null;
   columnId: string;
   projectId: string;
@@ -49,16 +49,16 @@ export async function action({ request, params }: ActionFunctionArgs) {
       const projectId = String(formData.get('projectId') || '');
 
       await workplaceDb(workplaceId).transaction(async (tx) => {
-        const columnCount = await tx
-          .select()
+        const columnCount = await workplaceDb(workplaceId)
+          .select({ count: sql<number>`count(*)` })
           .from(projectColumnTable)
           .where(eq(projectColumnTable.projectId, projectId))
-          .all();
+          .then((result) => result[0].count);
 
         return await tx.insert(projectColumnTable).values({
           name,
           projectId,
-          order: columnCount.length + 1
+          order: columnCount + 1
         });
       });
 
@@ -133,13 +133,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const user = await requireUser({ request, params });
-  // const memberOfProject = user?.memberOfProject.map((project) => project.projectId);
 
   const { projectId, workplaceId } = $params('/app/workplace/:workplaceId/projects/:projectId', params);
-
-  // if (!memberOfProject.find((i) => i === Number(projectId))) {
-  //   throw redirect($path('/app/workplace/:workplaceId/projects', { workplaceId: workplaceId }));
-  // }
 
   const project = await workplaceDb(workplaceId).query.projectTable.findMany({
     with: {
@@ -151,11 +146,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     where: eq(projectTable.id, projectId)
   });
 
-  return json({ project: project[0], user, workplaceId, projectId });
+  return json({ project: project[0], workplaceId, projectId, user });
 }
 
 const ProjectPage = () => {
-  const { project, user, workplaceId, projectId } = useLoaderData<typeof loader>();
+  const { project, workplaceId, projectId, user } = useLoaderData<typeof loader>();
 
   const tasksById = new Map(project.tasks.map((item) => [item.id, item]));
 
@@ -188,28 +183,26 @@ const ProjectPage = () => {
   }
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  function scrollRight() {
-    if (!scrollContainerRef.current) throw Error('no scroll container');
-    scrollContainerRef.current.scrollLeft = scrollContainerRef.current.scrollWidth;
-  }
 
   return (
     <div>
       <div className="flex justify-between">
         <H4 className="mb-6 capitalize tracking-wide">Project / {project.name}</H4>
-        <Link
-          to={$path('/app/workplace/:workplaceId/projects/:projectId/settings', { projectId, workplaceId })}
-          className={cn(buttonVariants({ variant: 'default', size: 'sm' }), '')}
-        >
-          Project Settings
-        </Link>
+        {project.ownerId === user.id ? (
+          <Link
+            to={$path('/app/workplace/:workplaceId/projects/:projectId/settings', { projectId, workplaceId })}
+            className={cn(buttonVariants({ variant: 'default', size: 'sm' }), '')}
+          >
+            Project Settings
+          </Link>
+        ) : null}
       </div>
       <div className="h-full flex flex-col overflow-x-scroll" ref={scrollContainerRef}>
         <div className="flex flex-grow h-full items-start gap-4 pb-4">
           {[...columns.values()].map((col, index, cols) => {
             return <Column key={col.id} name={col.name} columnId={col.id} tasks={col.tasks} order={col.order} />;
           })}
-          <NewColumn projectId={project.id} onAdd={scrollRight} editInitially={project.columns.length === 0} />
+          {/* <NewColumn projectId={project.id} onAdd={scrollRight} editInitially={project.columns.length === 0} /> */}
         </div>
       </div>
     </div>
@@ -265,6 +258,7 @@ function usePendingTasks() {
       const columnId = String(fetcher.formData.get('columnId'));
       const name = String(fetcher.formData.get('name'));
       const id = String(fetcher.formData.get('id'));
+      const createdAt = String(fetcher.formData.get('createdAt'));
       const order = Number(fetcher.formData.get('order'));
       const projectId = String(fetcher.formData.get('projectId'));
       const ownerId = String(fetcher.formData.get('ownerId'));
@@ -276,7 +270,8 @@ function usePendingTasks() {
         columnId,
         content,
         projectId,
-        ownerId
+        ownerId,
+        createdAt
       };
       return item;
     });
