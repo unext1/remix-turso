@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rf node_modules/.vite node_modules/.cache build public/build/entry.worker.js",
+    "upg": "pnpm update --interactive --latest --ignore-scripts",
     "build": "remix vite:build",
     "dev": "remix vite:dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
@@ -19,7 +20,7 @@
   },
   "dependencies": {
     "@conform-to/react": "^1.0.6",
-    "@conform-to/zod": "^1.0.6",
+    "@conform-to/zod": "^1.1.4",
     "@headlessui/react": "^1.7.18",
     "@lexical/react": "^0.15.0",
     "@libsql/client": "^0.6.0",
