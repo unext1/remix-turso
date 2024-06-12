@@ -97,17 +97,18 @@ const AppPage = () => {
       </div>
 
       {workplaces.length >= 1 ? (
-        workplaces.map((workplace) => (
-          <div className="grid sm:grid-cols-2 grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-4" key={workplace.id}>
+        <div className="grid sm:grid-cols-2 grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {workplaces.map((workplace) => (
             <CustomCard
+              key={workplace.id}
               name={workplace.name || ''}
               ownerId={workplace.ownerId}
               userId={user.id}
               workplaceId={workplace.id}
               userEmail={workplace.owner.email}
             />
-          </div>
-        ))
+          ))}
+        </div>
       ) : (
         <div className="flex flex-1 items-center justify-center rounded-lg border shadow-sm w-full">
           <div className="flex flex-col items-center gap-1 text-center">
