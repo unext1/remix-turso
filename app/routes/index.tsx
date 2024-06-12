@@ -77,7 +77,7 @@ export default function Index() {
         </div>
       </section>
       <section className="pb-20">
-        <img src="/bg.png" alt="bg of project" className="mx-auto max-w-5xl rounded-xl border-2" />
+        <img src="/bg.png" alt="bg of project" className="mx-auto max-w-5xl  w-full rounded-xl border-2" />
       </section>
     </div>
   );
